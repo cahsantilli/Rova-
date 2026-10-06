@@ -62,7 +62,7 @@ async function newPage(viewport) {
   // Every metric view.
   const metricIds = ["sleep", "hrv", "rhr", "training", "temperature", "respiration"];
   for (const [i, id] of metricIds.entries()) {
-    await page.click(`.nav a[href="#/${id}"]`);
+    await page.click(`.nav a[href="#${id}"]`);
     await page.waitForSelector("#metric-title");
     const charts = await page.$$(".chart svg");
     check(charts.length >= 1, `${id}: chart renders`);
@@ -74,7 +74,7 @@ async function newPage(viewport) {
   }
 
   // Missing data is shown as missing, never zero.
-  await page.click('.nav a[href="#/training"]');
+  await page.click('.nav a[href="#training"]');
   await page.click(".history .button");
   const aug13 = await page.$eval(".history tbody tr:has(th:text('Aug 13'))", (tr) => tr.innerText);
   check(/No reading/.test(aug13) && /21 min/.test(aug13), `training Aug 13 shows "No reading" for load and 21 min duration → "${aug13.replace(/\s+/g, " ")}"`);
@@ -116,7 +116,7 @@ async function newPage(viewport) {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check(overflow <= 0, `mobile: no horizontal page scroll (${overflow}px)`);
   await page.screenshot({ path: `${SHOTS}/06-mobile-overview.png`, fullPage: true });
-  await page.click('.nav a[href="#/sleep"]');
+  await page.click('.nav a[href="#sleep"]');
   await page.waitForSelector("#metric-title");
   const overflow2 = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check(overflow2 <= 0, `mobile metric: no horizontal page scroll (${overflow2}px)`);
@@ -137,7 +137,7 @@ async function newPage(viewport) {
   await page.evaluate(() => sessionStorage.clear());
   await page.reload();
   await page.setInputFiles('[data-testid="file-input"]', CSV);
-  await page.click('.nav a[href="#/hrv"]');
+  await page.click('.nav a[href="#hrv"]');
   await page.waitForSelector('[data-testid="ask"]');
   await page.fill('[data-testid="ask"] input', "Which day had my lowest HRV?");
   await page.click('[data-testid="ask"] button[type="submit"]');

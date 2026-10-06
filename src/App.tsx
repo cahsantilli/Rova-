@@ -16,7 +16,7 @@ interface Loaded {
 const STORE_KEY = "rova.csv";
 
 function readRoute(): MetricId | null {
-  const id = window.location.hash.replace(/^#\/?/, "");
+  const id = window.location.hash.replace(/^#\/?/, "");  // "#hrv" (also accepts the older "#/hrv")
   return metricById(id)?.id ?? null;
 }
 
@@ -48,7 +48,7 @@ export function App() {
   }, []);
 
   const go = useCallback((id: MetricId | null) => {
-    window.location.hash = id ? `/${id}` : "/";
+    window.location.hash = id ?? "overview";
   }, []);
 
   const handleFile = useCallback(async (file: File) => {
@@ -111,9 +111,9 @@ export function App() {
 
       <div className="layout">
         <nav className="nav" aria-label="Metrics">
-          <a href="#/" className={!metric ? "is-active" : undefined} aria-current={!metric ? "page" : undefined}>Overview</a>
+          <a href="#overview" className={!metric ? "is-active" : undefined} aria-current={!metric ? "page" : undefined}>Overview</a>
           {METRICS.map((m) => (
-            <a key={m.id} href={`#/${m.id}`} className={metric?.id === m.id ? "is-active" : undefined} aria-current={metric?.id === m.id ? "page" : undefined}>
+            <a key={m.id} href={`#${m.id}`} className={metric?.id === m.id ? "is-active" : undefined} aria-current={metric?.id === m.id ? "page" : undefined}>
               {m.name}
             </a>
           ))}
@@ -142,7 +142,7 @@ export function App() {
 function TopBar({ children }: { children?: React.ReactNode }) {
   return (
     <header className="topbar">
-      <a className="wordmark" href="#/">Rova</a>
+      <a className="wordmark" href="#overview">Rova</a>
       <div className="topbar-right">{children}</div>
     </header>
   );

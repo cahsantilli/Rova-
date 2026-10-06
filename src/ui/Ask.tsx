@@ -23,6 +23,7 @@ const inSentence = (name: string) => (name === name.toUpperCase() ? name : name.
 export function Ask({ csv, fileName, metricId, metricName }: AskProps) {
   const [question, setQuestion] = useState("");
   const [state, setState] = useState<State>({ kind: "idle" });
+  const [unavailable, setUnavailable] = useState(false);
   const abort = useRef<AbortController | null>(null);
 
   // A new metric is a new context; drop the previous exchange.
@@ -42,12 +43,15 @@ export function Ask({ csv, fileName, metricId, metricName }: AskProps) {
     setState({ kind: "loading", question: q });
     try {
       const res = await askAboutData({ csv, fileName, question: q, metricId }, ctrl.signal);
+      if (!res.ok && res.hide) { setUnavailable(true); return; }
       setState(res.ok ? { kind: "answer", question: q, answer: res.answer } : { kind: "error", question: q, error: res.error });
       if (res.ok) setQuestion("");
     } catch {
       /* aborted */
     }
   }
+
+  if (unavailable) return null;
 
   return (
     <div className="ask" data-testid="ask">
