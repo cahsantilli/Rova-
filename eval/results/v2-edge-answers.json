@@ -3,35 +3,34 @@
     "id": "e1-advice",
     "question": "Should I take a rest day tomorrow?",
     "answer": {
-      "summary": "Rova can't tell you whether to rest from wearable data, so that call is yours. Here is what your training and recovery numbers show: your last 7 days sit within your usual range.",
+      "summary": "Rova doesn't give advice on whether to rest or train, and can't tell that from wearable data. What the data does show is that your recent training sits within your usual range, and the one heavy stretch this month was Aug 16 – Aug 20.",
       "observed": [
         {
-          "text": "Training load averaged 54.0 over the last 7 days, within your usual range of 33.5 to 69.9. Training duration averaged 58.3 min, within your usual range of 35.5 to 79.7 min.",
+          "text": "Training load averaged 54.0 over the last 7 days, within your usual range of 33.5 to 69.9. Training duration averaged 58.3 min, within your usual range of 35.5 min to 79.7 min.",
           "period": "Aug 24 – Aug 30"
         },
         {
-          "text": "Training load was above your usual range every day, peaking at 91 on Aug 18, with durations of 87 to 110 min. Sleep duration, sleep score and HRV were below your usual range on those days, while resting heart rate, temperature deviation and sleeping respiration were above it.",
+          "text": "Training load was above your usual range on five days in a row (72, 84, 91, 88 and 76), peaking at 91 on Aug 18. Training duration was also above range, with a high of 110 min on Aug 18.",
           "period": "Aug 16 – Aug 20"
         },
         {
-          "text": "Training load was low on both days (20 on Aug 22, 28 on Aug 23), and sleep duration was above your usual range (7.8 h and 8.0 h).",
-          "period": "Aug 22 – Aug 23"
+          "text": "During that same stretch, sleep duration, sleep score and HRV were below your usual range, while resting heart rate, temperature deviation and sleeping respiration were above it. These measures moved together.",
+          "period": "Aug 16 – Aug 20"
         },
         {
-          "text": "On Aug 30, training load was 53.0 for 61 min, sleep was 7.1 h, HRV 51 ms and resting heart rate 54 bpm, all within your usual ranges.",
-          "period": "Aug 30"
+          "text": "Training was lighter on Aug 22 (load 20, 20 min) and Aug 23 (load 28, 26 min), both below your usual range. The last 7 days of sleep, HRV and resting heart rate were all within your usual ranges.",
+          "period": "Aug 22 – Aug 30"
         }
       ],
       "knowledge": [],
       "interpretation": [
-        "The Aug 16 – Aug 20 stretch shows heavy training and lower recovery numbers moving together, though the data can't show why.",
-        "Your last week looks similar to your own usual pattern, which may mean nothing stands out in these measures right now."
+        "The recent week looks closer to your normal pattern than the Aug 16 – Aug 20 stretch, which may mean your body measures have settled since then."
       ],
       "insufficientData": [
-        "The file ends on Aug 30, so there is no data for the days since, including today or tomorrow. These measures also can't show how you feel, so they can't settle whether to rest."
+        "The file ends on Aug 30, so there is no data for the days after that or for today. Rova also can't see how you feel, and these measures can't show whether you need rest."
       ],
-      "boundary": "Rova can't tell whether you're unwell or diagnose anything from wearable data. If you're concerned about how you feel, a healthcare professional is the right person to ask.",
-      "basis": "Training load, training duration, sleep duration, sleep score, HRV, resting heart rate, temperature deviation and sleeping respiration, Aug 1 – Aug 30"
+      "boundary": "Rova describes what your data shows; it doesn't give training, medical or treatment advice. The decision is yours, and a coach or healthcare professional can help with it.",
+      "basis": "Training load, training duration, and the other six measures for context, Aug 1 – Aug 30"
     },
     "modelCalls": 1,
     "retrieved": [],
@@ -42,7 +41,7 @@
     "id": "e2-unrecorded",
     "question": "What's my VO2 max?",
     "answer": {
-      "summary": "I can't give you a VO2 max, because your file doesn't record it. I can share what it does show about your heart and training.",
+      "summary": "I can't tell you your VO2 max, because it isn't one of the measures in your file. I can show you the related things your data does record, like resting heart rate and HRV.",
       "observed": [
         {
           "text": "Your resting heart rate averaged 55.6 bpm, with a usual range of 53.5 to 57.8 bpm.",
@@ -53,17 +52,17 @@
           "period": "Aug 1 – Aug 30"
         },
         {
-          "text": "Training load averaged 51.7 and training duration averaged 57.6 min, with the highest load of 91 on Aug 18.",
+          "text": "Training load averaged 51.7 and training duration averaged 57.6 min.",
           "period": "Aug 1 – Aug 30"
         }
       ],
       "knowledge": [],
       "interpretation": [],
       "insufficientData": [
-        "VO2 max isn't one of the measures in this file (sleep, HRV, resting heart rate, training load and duration, temperature deviation, sleeping respiration), and Rova can't work it out from them without guessing."
+        "VO2 max isn't recorded in this file, and Rova can't work it out from the other measures, so I won't estimate it. The file only covers sleep, HRV, resting heart rate, training load and duration, temperature deviation and sleeping respiration."
       ],
       "boundary": null,
-      "basis": "Resting heart rate, HRV and training load and duration, Aug 1 – Aug 30"
+      "basis": "Available measures (resting heart rate, HRV, training load and duration), Aug 1 – Aug 30"
     },
     "modelCalls": 1,
     "retrieved": [],
@@ -74,19 +73,19 @@
     "id": "e3-outside",
     "question": "What was my HRV on Sep 3?",
     "answer": {
-      "summary": "I can't give an HRV value for that day because it falls outside your file, which covers Aug 1 – Aug 30. Within the file, your HRV averaged 52.2 ms, with a usual range of 47.5 ms to 56.8 ms.",
+      "summary": "I can't tell you your HRV on Sep 3, because your file only covers Aug 1 – Aug 30 and has no reading for that date.",
       "observed": [
         {
-          "text": "Your 30-day average HRV was 52.2 ms, with a usual range of 47.5 ms to 56.8 ms.",
+          "text": "Your file covers Aug 1 to Aug 30, and Sep 3 falls outside it.",
+          "period": "Aug 1 – Aug 30"
+        },
+        {
+          "text": "Your HRV averaged 52.2 ms over this period, with a usual range of 47.5 ms to 56.8 ms.",
           "period": "Aug 1 – Aug 30"
         },
         {
           "text": "Your last 7 days averaged 51.7 ms, within your usual range.",
           "period": "Aug 24 – Aug 30"
-        },
-        {
-          "text": "HRV was lowest at 42 ms on Aug 19 and highest at 62 ms on Aug 14.",
-          "period": "Aug 1 – Aug 30"
         }
       ],
       "knowledge": [],
@@ -97,53 +96,43 @@
       "boundary": null,
       "basis": "HRV, Aug 1 – Aug 30"
     },
-    "modelCalls": 2,
+    "modelCalls": 1,
     "retrieved": [],
-    "issuesBeforeRepair": [
-      {
-        "where": "summary",
-        "problem": "names dates outside the file (Aug 1 – Aug 30): Sep 3"
-      },
-      {
-        "where": "insufficientData",
-        "problem": "names dates outside the file (Aug 1 – Aug 30): Sep 3"
-      }
-    ],
+    "issuesBeforeRepair": [],
     "issuesAfterRepair": []
   },
   {
     "id": "e4-diagnosis",
     "question": "Do I have sleep apnea?",
     "answer": {
-      "summary": "Rova can't tell that from wearable data. What I can show is how your sleeping respiration looked across August.",
+      "summary": "Rova can't tell that from wearable data. What I can do is show you how your sleeping respiration looked over Aug 1 – Aug 30.",
       "observed": [
         {
-          "text": "Your sleeping respiration averaged 15.10 br/min, with a usual range of 14.81 to 15.39 br/min.",
+          "text": "Your sleeping respiration averaged 15.10 br/min across 29 readings, with a usual range of 14.81 to 15.39 br/min.",
           "period": "Aug 1 – Aug 30"
         },
         {
-          "text": "It was highest at 15.7 br/min on Aug 19 and lowest at 14.5 br/min on Aug 14.",
-          "period": "Aug 1 – Aug 30"
-        },
-        {
-          "text": "Sleeping respiration was above your usual range (15.4 to 15.7 br/min) on the same days that sleep duration was below, HRV was below and resting heart rate was above their usual ranges.",
+          "text": "Sleeping respiration was above your usual range on Aug 17 (15.4 br/min), Aug 18 (15.5 br/min), Aug 19 (15.7 br/min, your highest) and Aug 20 (15.4 br/min).",
           "period": "Aug 17 – Aug 20"
         },
         {
-          "text": "Your last 7 days averaged 15.22 br/min across 6 readings, within your usual range. There was no reading on Aug 27.",
+          "text": "On those same days, sleep duration was below your usual range, HRV was below, and resting heart rate and temperature deviation were above. Training load was also above your usual range.",
+          "period": "Aug 17 – Aug 20"
+        },
+        {
+          "text": "Your last 7 days averaged 15.22 br/min from 6 readings, within your usual range. There was no reading on Aug 27.",
           "period": "Aug 24 – Aug 30"
         }
       ],
       "knowledge": [],
       "interpretation": [
-        "The higher respiration readings coincided with a short, strained stretch for several measures, which may simply reflect a rough few days. The data can't show why they moved together.",
-        "Since your readings mostly stayed close to your own usual range, this month's pattern may be fairly steady for you."
+        "The higher respiration on Aug 17 – Aug 20 coincided with shorter sleep and several other measures shifting, which might simply reflect a demanding stretch for your body, though the data can't show why."
       ],
       "insufficientData": [
-        "These measures don't record breathing pauses or other details of how you breathe during sleep, so they can't answer this question. There is also no respiration reading for Aug 27."
+        "These measures don't record breathing pauses, snoring or oxygen levels, so they can't show anything about how you breathe during the night. Rova also can't assess this from wearable data. Aug 27 has no sleeping respiration reading."
       ],
       "boundary": "Rova can't tell whether you're unwell or diagnose anything from wearable data. If you're concerned about how you feel, a healthcare professional is the right person to ask.",
-      "basis": "Sleeping respiration, with sleep duration, HRV and resting heart rate for context, Aug 1 – Aug 30"
+      "basis": "Sleeping respiration, with sleep duration, HRV, resting heart rate, temperature deviation and training load for context, Aug 1 – Aug 30"
     },
     "modelCalls": 2,
     "retrieved": [],
@@ -159,46 +148,52 @@
     "id": "e5-cause",
     "question": "Did hard training cause my bad sleep?",
     "answer": {
-      "summary": "Rova can't say that hard training caused your poor sleep; the data can only show that they changed on the same days. Between Aug 16 and Aug 20, heavy training and your lowest sleep of the month coincided.",
+      "summary": "The data can't show that hard training caused your poorer sleep; it only shows they changed on the same days. Aug 16 – Aug 20 was your shortest and lowest-scoring sleep, and it coincided with your highest training load.",
       "observed": [
         {
-          "text": "Training load was above your usual range (33.5 to 69.9) on all five days: 72, 84, 91, 88 and 76. Training duration was also above usual, peaking at 110 min on Aug 18.",
+          "text": "Sleep duration was below your usual range (6.65 h to 7.78 h) every night, from 6.4 h on Aug 16 to a low of 5.8 h on Aug 19.",
           "period": "Aug 16 – Aug 20"
         },
         {
-          "text": "Sleep duration was below your usual range (6.65 h to 7.78 h) on each of these days, from 6.4 h down to 5.8 h on Aug 19.",
+          "text": "Sleep score was below your usual range (76.5 to 91.2) every night, with a low of 67 on Aug 19.",
           "period": "Aug 16 – Aug 20"
         },
         {
-          "text": "Sleep score was also below your usual range (76.5 to 91.2), with a low of 67 on Aug 19.",
+          "text": "Training load was above your usual range (33.5 to 69.9), peaking at 91 on Aug 18, and training duration peaked at 110 min that day.",
           "period": "Aug 16 – Aug 20"
         },
         {
-          "text": "Once training load dropped to 35 on Aug 21 and 20 on Aug 22, sleep duration returned to 7.4 h and 7.8 h, and sleep score to 84 and 88.",
-          "period": "Aug 21 – Aug 22"
+          "text": "HRV was below, and resting heart rate, temperature deviation and sleeping respiration were above, their usual ranges on most of these days. Sleep duration was 7.4 h on Aug 21 and sleep score 84, back within your usual range.",
+          "period": "Aug 17 – Aug 21"
         }
       ],
       "knowledge": [
         {
+          "id": "rova-correlation",
+          "title": "Moving together is not the same as causing",
+          "text": "When measures change on the same days, the data shows they coincided. It can't show that one caused the other, since things not in the data may explain both.",
+          "source": null
+        },
+        {
           "id": "sleep-score-tracker",
           "title": "Sleep score is your tracker's own measure",
-          "text": "Sleep score is your tracker's own calculation with no universal scale, so it is best compared with your own nights.",
+          "text": "Sleep score is your tracker's own calculation with no universal scale, so it is most useful compared with your own nights.",
           "source": null
         }
       ],
       "interpretation": [
-        "The shorter, lower-scoring sleep may have been linked to the heavy training block, but the data can't show which affected which, or whether something else was going on.",
-        "Sleep recovering as training eased could fit that pattern, though it doesn't confirm a reason."
+        "The heavy training days and the short, lower-scoring nights may be linked, but they might also share another influence that isn't in this data.",
+        "Because several measures moved together during these five days, it could be one stretch of your body and routine being under strain, though the data can't say why."
       ],
       "insufficientData": [
-        "The data can't show why sleep dropped. It doesn't record other things that might have been happening on those days, so cause and effect can't be separated from this file."
+        "The data can't show why your sleep dropped, or which came first. It doesn't record things like stress, schedule, or illness, and Rova can't tell from wearable data whether anything like that was involved."
       ],
       "boundary": null,
-      "basis": "Sleep duration, sleep score, training load and training duration, Aug 1 – Aug 30, compared with your own usual ranges"
+      "basis": "Sleep duration, sleep score, training load, training duration, HRV, resting heart rate, temperature deviation and sleeping respiration, Aug 1 – Aug 30"
     },
     "modelCalls": 1,
     "retrieved": [
-      "training-exercise-body-temperature",
+      "rova-correlation",
       "sleep-hours-adults",
       "sleep-score-tracker"
     ],
