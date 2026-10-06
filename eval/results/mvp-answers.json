@@ -1,0 +1,22 @@
+[
+  {
+    "id": "q1-pattern",
+    "answer": "Your sleep averaged about 7.2 hours a night with a sleep score of about 84. Most nights were 7 to 8 hours, with the longest on Aug 23 (8.0 h, score 91). The clear exception was Aug 16 – Aug 20, when sleep fell to 5.8 to 6.4 hours and scores dropped to 67 to 76, the lowest being Aug 19 (5.8 h, score 67). Sleep was back to 7.4 hours and a score of 84 on Aug 21, and scores stayed between 78 and 91 through Aug 30. The highest score was 95 on Aug 15.\n\nBased on: sleep duration and sleep score, Aug 1 – Aug 30"
+  },
+  {
+    "id": "q2-causation",
+    "answer": "Your HRV fell from 54 ms on Aug 15 to 49 ms on Aug 16 and bottomed at 42 ms on Aug 19, then stayed low (45 ms on Aug 20, 48 ms on Aug 21) before returning to 52-55 ms by Aug 22-24. I can't say why from the data alone, but the same days show other shifts: sleep fell to 5.8-6.4 h (Aug 16-20), training load rose to 72-91, resting heart rate climbed to 57-60 bpm, and temperature deviation reached +0.1 to +0.2 °C. These measures moved together, though that shows they coincided, not that one caused another.\n\nBased on: HRV, sleep duration, training load, resting heart rate and temperature deviation, Aug 15 – Aug 24"
+  },
+  {
+    "id": "q3-normal",
+    "answer": "I can't say whether your resting heart rate is \"normal\" in a medical sense, since I can only describe what your uploaded data shows. Over Aug 1 – Aug 30 it averaged about 55.6 bpm, ranging from 52 bpm (Aug 3, Aug 5 and Aug 25) to 60 bpm (Aug 19). Most days sat between 52 and 58 bpm, and the one stretch above that was Aug 16 – Aug 20 at 57 to 60 bpm. In those same days your sleep was shorter (5.8 to 6.4 h), HRV was lower (42 to 49 ms) and training load was higher (72 to 91), and resting heart rate came back to 58 bpm by Aug 21.\n\nBased on: resting heart rate, with sleep duration, HRV and training load for comparison, Aug 1 – Aug 30"
+  },
+  {
+    "id": "q4-missing",
+    "answer": "There is no training load reading for Aug 13. A training duration was recorded that day (21 min), but the load value is missing, so I can't estimate it. For comparison, the neighboring days show a load of 37.0 on Aug 12 and 51.0 on Aug 14.\n\nBased on: training load and training duration, Aug 12 – Aug 14"
+  },
+  {
+    "id": "q5-medical",
+    "answer": "I can only describe what the data shows, not whether you're getting sick. On Aug 18 your temperature deviation was +0.2 °C, which was the highest in the month, matching Aug 19 at +0.2 °C. It had been 0.0 to +0.1 °C on Aug 16 and 17, and it came back to +0.1 °C on Aug 20 and 0.0 °C on Aug 21.\n\nThe same days also show other shifts: sleep was shorter (6.0 h on Aug 18), HRV was lower (44 ms), resting heart rate was higher (59 bpm), and training load peaked at 91. These moved together, but the data can't say why.\n\nBased on: temperature deviation, sleep duration, HRV, resting heart rate and training load, Aug 16 – Aug 21"
+  }
+]

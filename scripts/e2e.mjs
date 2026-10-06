@@ -2,7 +2,7 @@
 // Usage: npm run build && npm start  (in another shell), then: npm run e2e
 // Env: BASE_URL (default http://localhost:8787), CHROMIUM (path to a Chromium binary), SHOTS (screenshot dir).
 import { chromium } from "playwright-core";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const BASE = process.env.BASE_URL ?? "http://localhost:8787";
@@ -132,13 +132,15 @@ async function newPage(viewport) {
 }
 
 // 3. Ask, with the AI endpoints stubbed in the browser (no model call is made).
+// The stub is a real answer recorded by eval/run-v2.ts for "Why did my HRV drop in mid-August?".
+const STUB_ANSWER = JSON.parse(readFileSync(new URL("../eval/results/v2-answers.json", import.meta.url), "utf8")).find((r) => r.id === "q2-causation").answer;
 {
   const page = await newPage({ width: 1280, height: 900 });
   let sent = null;
   await page.route("**/api/intelligence/status", (r) => r.fulfill({ json: { available: true } }));
   await page.route("**/api/intelligence/ask", (r) => {
     sent = r.request().postDataJSON();
-    r.fulfill({ json: { ok: true, answer: "(stubbed answer for the test run)\n\nBased on: HRV, Aug 1 – Aug 30" } });
+    r.fulfill({ json: { ok: true, answer: STUB_ANSWER } });
   });
   await page.goto(BASE);
   await page.evaluate(() => sessionStorage.clear());
@@ -151,14 +153,24 @@ async function newPage(viewport) {
   await page.click('[data-testid="ask"] .starter');
   await page.waitForSelector(".ask-a");
   check(sent?.metricId === "hrv" && sent?.question === "When was my HRV lowest?" && sent?.csv?.includes("2026-08-19,5.8,67,42"), "a starter question sends the question, metric and unmodified CSV");
-  check((await page.textContent(".ask-a")) === "(stubbed answer for the test run)", "Ask shows the answer");
-  check(/HRV, Aug 1 – Aug 30/.test(await page.textContent(".ask-basis")), "Ask shows what the answer is based on");
+  check((await page.textContent(".ask-a")) === STUB_ANSWER.summary, "Ask shows the direct answer first");
+  const parts = await page.$$eval(".ask-part", (els) => els.map((e) => [e.dataset.part, e.querySelector("h3").textContent]));
+  check(JSON.stringify(parts) === JSON.stringify([["data", "From your data"], ["gaps", "Not in your data"], ["knowledge", "General knowledge"], ["interpretation", "What this might mean"]]), `Ask keeps data, gaps, knowledge and interpretation apart (${parts.map((p) => p[1]).join(" / ")})`);
+  check((await page.$$eval('.ask-part[data-part="data"] .ask-period', (els) => els.length)) === STUB_ANSWER.observed.length, "each data point shows the period it covers");
+  check((await page.getAttribute('.ask-part[data-part="knowledge"] .ask-source a', "href"))?.startsWith("https://my.clevelandclinic.org/"), "general knowledge links to its source");
+  check(/Rova editorial/.test(await page.textContent('.ask-part[data-part="knowledge"]')), "Rova's own notes are labelled as editorial");
+  check(/HRV/.test(await page.textContent(".ask-basis")), "Ask shows what the answer is based on");
   await page.fill('[data-testid="ask"] input', "Which day had my lowest HRV?");
   await page.click('[data-testid="ask"] button[type="submit"]');
   await page.waitForFunction(() => document.querySelector(".ask-q")?.textContent === "Which day had my lowest HRV?" && document.querySelector(".ask-a"));
   check(true, "typed questions work");
   await page.$eval('[data-testid="ask"]', (el) => el.scrollIntoView({ block: "center" }));
   await page.screenshot({ path: `${SHOTS}/08-ask.png` });
+  await page.setViewportSize({ width: 390, height: 844 });
+  const answerWidth = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  check(answerWidth <= 0, `the answer fits a phone screen (${answerWidth}px overflow)`);
+  await page.$eval(".ask-result", (el) => el.scrollIntoView({ block: "start" }));
+  await page.screenshot({ path: `${SHOTS}/09-ask-mobile.png`, fullPage: false });
   await page.close();
 }
 

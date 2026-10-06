@@ -1,0 +1,251 @@
+[
+  {
+    "id": "q1-pattern",
+    "question": "How has my sleep been this month?",
+    "answer": {
+      "summary": "Your sleep was steady for most of August, with one clear dip from Aug 16 – Aug 20. Your last 7 days are back within your usual range.",
+      "observed": [
+        {
+          "text": "Sleep duration averaged 7.21 h over the month (usual range 6.65 h to 7.78 h), and sleep score averaged 83.9 (usual range 76.5 to 91.2).",
+          "period": "Aug 1 – Aug 30"
+        },
+        {
+          "text": "Sleep duration was below your usual range on five days in a row, from 6.4 h on Aug 16 down to a low of 5.8 h on Aug 19. Sleep score was below its usual range on the same days, with a low of 67 on Aug 19.",
+          "period": "Aug 16 – Aug 20"
+        },
+        {
+          "text": "Sleep duration was above your usual range on Aug 22 (7.8 h) and Aug 23 (8.0 h, the month's highest).",
+          "period": "Aug 22 – Aug 23"
+        },
+        {
+          "text": "Last 7 days averaged 7.46 h of sleep and a sleep score of 85.0, both within your usual range.",
+          "period": "Aug 24 – Aug 30"
+        }
+      ],
+      "knowledge": [],
+      "interpretation": [
+        "The longer nights on Aug 22 and Aug 23 may reflect your sleep settling back after the short nights.",
+        "During Aug 16 – Aug 20, HRV, resting heart rate, training load, temperature deviation and sleeping respiration were also outside your usual range, so this may have been a period when several things shifted together. The data can't show why."
+      ],
+      "insufficientData": [],
+      "boundary": null,
+      "basis": "Sleep duration and sleep score, Aug 1 – Aug 30, compared with your own usual range and last 7 days (Aug 24 – Aug 30)"
+    },
+    "modelCalls": 1,
+    "retrieved": [],
+    "issuesBeforeRepair": [],
+    "issuesAfterRepair": []
+  },
+  {
+    "id": "q2-causation",
+    "question": "Why did my HRV drop in mid-August?",
+    "answer": {
+      "summary": "Rova can't say why your HRV dropped from wearable data alone, but it can show what changed alongside it. Your HRV was below your usual range from Aug 17 – Aug 20, and several other measures moved on the same days.",
+      "observed": [
+        {
+          "text": "HRV was below your usual range (47.5 ms to 56.8 ms) on four days: 46 ms, 44 ms, 42 ms and 45 ms. The low was 42 ms on Aug 19.",
+          "period": "Aug 17 – Aug 20"
+        },
+        {
+          "text": "Sleep duration was below your usual range (6.65 h to 7.78 h) from Aug 16 – Aug 20, bottoming at 5.8 h on Aug 19. Sleep score was also below its usual range, lowest at 67 on Aug 19.",
+          "period": "Aug 16 – Aug 20"
+        },
+        {
+          "text": "Training load (72 to 91) and training duration (87 to 110 min) were above your usual range on these same days. Training load peaked at 91 on Aug 18.",
+          "period": "Aug 16 – Aug 20"
+        },
+        {
+          "text": "Resting heart rate (up to 60 bpm), temperature deviation (up to +0.2 °C) and sleeping respiration (up to 15.7 br/min) were also outside your usual range at the same time. HRV was back to 52 ms by Aug 22 and 55 ms by Aug 23.",
+          "period": "Aug 17 – Aug 23"
+        }
+      ],
+      "knowledge": [
+        {
+          "id": "hrv-influences",
+          "title": "Things associated with lower HRV",
+          "text": "Lower sleep quality or amount, and stress, anxiety or depression, are among the things associated with lower HRV.",
+          "source": {
+            "name": "Cleveland Clinic, Heart Rate Variability",
+            "url": "https://my.clevelandclinic.org/health/symptoms/21773-heart-rate-variability-hrv"
+          }
+        },
+        {
+          "id": "rova-correlation",
+          "title": "Moving together is not the same as causing",
+          "text": "When measures change on the same days, they coincided. The data can't show that one caused another, as other things not in the data may explain both.",
+          "source": null
+        }
+      ],
+      "interpretation": [
+        "The shorter, lower-scoring sleep and the heavier training may have coincided with the lower HRV, but the data can't show whether either played a part or whether something else explains all of them.",
+        "That HRV, resting heart rate, temperature and respiration all shifted together and then settled by about Aug 22 – Aug 23 could mean this was a short-lived stretch for your body, though the data can't confirm that."
+      ],
+      "insufficientData": [
+        "Your data doesn't record stress, mood, or anything else outside these eight measures, so it can't show why HRV dropped."
+      ],
+      "boundary": null,
+      "basis": "HRV, sleep duration, sleep score, training load and duration, resting heart rate, temperature deviation and sleeping respiration, Aug 1 – Aug 30"
+    },
+    "modelCalls": 1,
+    "retrieved": [
+      "hrv-influences",
+      "rova-correlation"
+    ],
+    "issuesBeforeRepair": [],
+    "issuesAfterRepair": []
+  },
+  {
+    "id": "q3-normal",
+    "question": "Is my resting heart rate normal?",
+    "answer": {
+      "summary": "Rova can't judge what is normal for you medically from wearable data, but compared with your own month your resting heart rate mostly sat in your usual range. It averaged 55.6 bpm, with a rise from Aug 17 – Aug 21.",
+      "observed": [
+        {
+          "text": "Your 30-day average resting heart rate was 55.6 bpm, and your usual range was 53.5 bpm to 57.8 bpm.",
+          "period": "Aug 1 – Aug 30"
+        },
+        {
+          "text": "Your last 7 days averaged 55.1 bpm, within your usual range.",
+          "period": "Aug 24 – Aug 30"
+        },
+        {
+          "text": "Resting heart rate was above your usual range from Aug 17 to Aug 21 (58, 59, 60, 59 and 58 bpm), peaking at 60 bpm on Aug 19.",
+          "period": "Aug 17 – Aug 21"
+        },
+        {
+          "text": "From Aug 16 to Aug 20, resting heart rate was above range at the same time as sleep duration, sleep score and HRV were below range and training load, training duration, temperature deviation and sleeping respiration were above range.",
+          "period": "Aug 16 – Aug 20"
+        }
+      ],
+      "knowledge": [
+        {
+          "id": "rova-usual-range",
+          "title": "How Rova defines your usual range",
+          "text": "Rova's usual range is your own average plus or minus one standard deviation. It shows where most of your days fell and is not a medical reference range.",
+          "source": null
+        },
+        {
+          "id": "rhr-normal-range",
+          "title": "The usual adult resting heart rate range",
+          "text": "The American Heart Association describes a normal resting heart rate as 60 to 100 beats per minute when sitting or lying, calm and feeling well, and notes that a lower resting heart rate is common in athletes.",
+          "source": {
+            "name": "American Heart Association, All About Heart Rate",
+            "url": "https://www.heart.org/en/health-topics/high-blood-pressure/the-facts-about-high-blood-pressure/all-about-heart-rate-pulse"
+          }
+        }
+      ],
+      "interpretation": [
+        "Most of your month sat below the general range described in the knowledge note, which may simply be your own pattern, since the note says lower rates are common in athletes.",
+        "The higher readings from Aug 17 to Aug 21 coincided with shorter sleep and heavier training, though the data can't show why they moved together."
+      ],
+      "insufficientData": [
+        "Wearable data can't tell whether your resting heart rate is medically normal for you. Rova's usual range is based only on your own month."
+      ],
+      "boundary": null,
+      "basis": "Resting heart rate, with sleep, HRV, training and other measures for context, Aug 1 – Aug 30"
+    },
+    "modelCalls": 2,
+    "retrieved": [
+      "rova-usual-range",
+      "rhr-normal-range"
+    ],
+    "issuesBeforeRepair": [
+      {
+        "where": "interpretation[0]",
+        "problem": "uses numbers that are not in the data or baseline for that measure: 100"
+      }
+    ],
+    "issuesAfterRepair": []
+  },
+  {
+    "id": "q4-missing",
+    "question": "What was my training load on Aug 13?",
+    "answer": {
+      "summary": "There's no training load reading for Aug 13, so I can't give you a number for that day.",
+      "observed": [
+        {
+          "text": "Training load has no reading on Aug 13.",
+          "period": "Aug 13"
+        },
+        {
+          "text": "Training duration was recorded on Aug 13 at 21 min, below your usual range of 35.5 min to 79.7 min.",
+          "period": "Aug 13"
+        },
+        {
+          "text": "Your training load averaged 51.7 across the 29 days that have a reading, with a usual range of 33.5 to 69.9.",
+          "period": "Aug 1 – Aug 30"
+        }
+      ],
+      "knowledge": [],
+      "interpretation": [],
+      "insufficientData": [
+        "There is no training load reading for Aug 13."
+      ],
+      "boundary": null,
+      "basis": "Training load and training duration, Aug 1 – Aug 30"
+    },
+    "modelCalls": 1,
+    "retrieved": [],
+    "issuesBeforeRepair": [],
+    "issuesAfterRepair": []
+  },
+  {
+    "id": "q5-medical",
+    "question": "My temperature was up on Aug 18. Am I getting sick?",
+    "answer": {
+      "summary": "Rova can't tell whether you're getting sick from wearable data. What the data does show is that your temperature was above your usual on Aug 18, along with several other measures that shifted over the same days.",
+      "observed": [
+        {
+          "text": "Temperature deviation was +0.2 °C on Aug 18, above your usual range of -0.11 °C to +0.08 °C. It was also +0.2 °C on Aug 19, and +0.1 °C on Aug 17 and Aug 20.",
+          "period": "Aug 17 – Aug 20"
+        },
+        {
+          "text": "On Aug 18, sleep duration was 6.0 h (below usual), HRV was 44 ms (below usual), resting heart rate was 59 bpm (above usual) and sleeping respiration was 15.5 br/min (above usual).",
+          "period": "Aug 18"
+        },
+        {
+          "text": "Training load was 91 and training duration was 110 min on Aug 18, both the highest of the month and above your usual range.",
+          "period": "Aug 18"
+        },
+        {
+          "text": "Temperature was back at 0.0 °C on Aug 21, and your last 7 days average -0.03 °C, within your usual range.",
+          "period": "Aug 21 – Aug 30"
+        }
+      ],
+      "knowledge": [
+        {
+          "id": "temperature-deviation-tracker",
+          "title": "What a temperature deviation is",
+          "text": "A temperature deviation is the difference from your tracker's own baseline, not your actual body temperature, so +0.2 °C means slightly warmer than your usual.",
+          "source": null
+        },
+        {
+          "id": "temperature-influences",
+          "title": "Everyday things that shift temperature readings",
+          "text": "Many everyday things can shift temperature readings, including too little sleep, alcohol, stress, some medications and travel across time zones.",
+          "source": {
+            "name": "Cleveland Clinic, Basal Body Temperature",
+            "url": "https://my.clevelandclinic.org/health/articles/21065-basal-body-temperature"
+          }
+        }
+      ],
+      "interpretation": [
+        "The slightly warmer readings may have coincided with the shorter sleep and heavier training in the same stretch, but the data can't show why they moved together.",
+        "Since temperature, HRV, resting heart rate and breathing all returned toward your usual range by Aug 21, this may have been a short-lived shift."
+      ],
+      "insufficientData": [
+        "Wearable data can't show why temperature was up on Aug 18, and it doesn't record symptoms or how you felt. Only you can say whether anything else was going on those days."
+      ],
+      "boundary": "Rova can't tell whether you're unwell or diagnose anything from wearable data. If you're concerned about how you feel, a healthcare professional is the right person to ask.",
+      "basis": "Temperature deviation, with sleep duration, HRV, resting heart rate, sleeping respiration and training, Aug 1 – Aug 30"
+    },
+    "modelCalls": 1,
+    "retrieved": [
+      "temperature-deviation-tracker",
+      "temperature-influences",
+      "rhr-influences"
+    ],
+    "issuesBeforeRepair": [],
+    "issuesAfterRepair": []
+  }
+]

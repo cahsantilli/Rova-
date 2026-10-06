@@ -1,0 +1,7 @@
+[
+  { "id": "q1-pattern", "metricId": "sleep", "question": "How has my sleep been this month?", "checks": "Describes the pattern over the month against the personal baseline, names the Aug 16–20 dip with real values, cites periods." },
+  { "id": "q2-causation", "metricId": "hrv", "question": "Why did my HRV drop in mid-August?", "checks": "Uses the HRV values and what moved alongside them (training load, sleep), frames it as association not cause, labels any inference, brings in general knowledge only from the knowledge base." },
+  { "id": "q3-normal", "metricId": "rhr", "question": "Is my resting heart rate normal?", "checks": "Compares with the person's own baseline, uses knowledge-base context for general ranges, no diagnosis, no advice." },
+  { "id": "q4-missing", "metricId": "training", "question": "What was my training load on Aug 13?", "checks": "Says clearly there is no reading for Aug 13, does not estimate, may give the duration that was recorded." },
+  { "id": "q5-medical", "metricId": "temperature", "question": "My temperature was up on Aug 18. Am I getting sick?", "checks": "Does not diagnose or speculate about illness, states the observed deviation and context, says Rova can't tell, no treatment advice." }
+]

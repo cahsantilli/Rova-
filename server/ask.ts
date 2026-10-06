@@ -1,9 +1,7 @@
 import { parseWellnessCsv } from "../src/domain/parse";
-import { datasetAsContext, MAX_QUESTION_CHARS, type AskRequest, type AskResponse } from "../src/intelligence/contract";
-import { buildUserMessage, SYSTEM_PROMPT } from "../src/intelligence/prompt";
+import { MAX_QUESTION_CHARS, type AskRequest, type AskResponse } from "../src/intelligence/contract";
+import { AnswerError, answerQuestion } from "../src/intelligence/answer";
 import { LlmError, type LlmProvider } from "./llm";
-
-export { SYSTEM_PROMPT };
 
 export function validateAskRequest(body: unknown): AskRequest | string {
   if (!body || typeof body !== "object") return "Request body must be JSON.";
@@ -26,10 +24,14 @@ export async function handleAsk(body: unknown, llm: LlmProvider): Promise<{ stat
   const parsed = parseWellnessCsv(req.csv, req.fileName);
   if (!parsed.ok) return { status: 400, body: { ok: false, error: "The data couldn't be read. Please upload the file again." } };
   try {
-    const answer = await llm.complete({ system: SYSTEM_PROMPT, user: buildUserMessage(req, datasetAsContext(parsed.dataset)) });
+    const answer = await answerQuestion(parsed.dataset, req, (input) => llm.complete(input));
     return { status: 200, body: { ok: true, answer } };
   } catch (e) {
-    const msg = e instanceof LlmError ? e.userMessage : "Rova couldn't answer right now. Please try again.";
+    const msg = e instanceof LlmError
+      ? e.userMessage
+      : e instanceof AnswerError
+        ? "Rova couldn't put together an answer it could check against your data. Try asking about specific dates or values."
+        : "Rova couldn't answer right now. Please try again.";
     console.error("[ask]", e instanceof Error ? e.message : e);
     return { status: 502, body: { ok: false, error: msg } };
   }

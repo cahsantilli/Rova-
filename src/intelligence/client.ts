@@ -3,8 +3,8 @@
 // - anywhere else, the page calls Rova's server (/api/intelligence/*), which holds the API key.
 
 import { parseWellnessCsv } from "../domain/parse";
-import { datasetAsContext, type AskRequest, type AskResponse, type IntelligenceStatus } from "./contract";
-import { buildUserMessage, SYSTEM_PROMPT } from "./prompt";
+import { type AskRequest, type AskResponse, type IntelligenceStatus } from "./contract";
+import { AnswerError, answerQuestion } from "./answer";
 
 interface SampleError { code: string; text?: string }
 type Sample = (input: string, opts?: { signal?: AbortSignal; modelTier?: "default" | "quick" | "complex" }) => Promise<{ text: string; truncated: boolean }>;
@@ -53,12 +53,12 @@ export async function askAboutData(req: AskRequest, signal?: AbortSignal): Promi
   if (sample) {
     const parsed = parseWellnessCsv(req.csv, req.fileName);
     if (!parsed.ok) return { ok: false, error: "The data couldn't be read. Please upload the file again." };
-    // The page has no system prompt here, so the instructions lead the input.
-    const input = `${SYSTEM_PROMPT}\n\n${buildUserMessage(req, datasetAsContext(parsed.dataset))}`;
     try {
-      const { text } = await sample(input, { signal });
-      return { ok: true, answer: text.trim() };
+      // The page has no system prompt here, so the instructions lead the input.
+      const answer = await answerQuestion(parsed.dataset, req, async ({ system, user }) => (await sample(`${system}\n\n${user}`, { signal })).text);
+      return { ok: true, answer };
     } catch (e) {
+      if (e instanceof AnswerError) return { ok: false, error: "Rova couldn't put together an answer it could check against your data. Try asking about specific dates or values." };
       const code = (e as SampleError)?.code ?? "upstream_error";
       if (code === "cancelled") throw Object.assign(new Error("aborted"), { name: "AbortError" });
       if (HIDE_CODES.has(code)) return { ok: false, error: "Ask isn't available in this view.", hide: true };

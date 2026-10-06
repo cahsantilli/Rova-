@@ -1,9 +1,8 @@
 // The boundary between the product and Rova's intelligence layer.
 //
-// Phase 1 (this MVP) has one capability: answer a question using only the uploaded values.
-// Later phases (knowledge base / RAG, proactive insights, richer guardrails) plug in behind
-// the same server endpoint and the same request/response shapes, so the UI doesn't change
-// when the layer gets smarter.
+// Ask answers a question from three things, kept apart all the way to the screen: the person's
+// own data (with their personal baseline), general knowledge retrieved from Rova's curated
+// knowledge base, and tentative interpretation. See answer.ts for the pipeline.
 
 import type { Dataset } from "../domain/parse";
 import { FIELDS, METRICS, type FieldKey, type MetricId } from "../domain/schema";
@@ -22,8 +21,34 @@ export interface AskRequest {
   metricId?: MetricId;
 }
 
+export interface KnowledgeCitation {
+  id: string;
+  title: string;
+  /** The answer's restatement of the entry. */
+  text: string;
+  /** null = Rova editorial. */
+  source: { name: string; url: string } | null;
+}
+
+export interface RovaAnswer {
+  /** A direct one- or two-sentence answer. */
+  summary: string;
+  /** Facts from the person's data, each with the dates it covers. */
+  observed: { text: string; period: string }[];
+  /** General knowledge, only from entries retrieved for this question. */
+  knowledge: KnowledgeCitation[];
+  /** Tentative readings of what a pattern might mean. Never stated as fact. */
+  interpretation: string[];
+  /** What the data can't show for this question (missing readings, dates outside the file). */
+  insufficientData: string[];
+  /** Set for questions about illness or advice: what Rova can't do. */
+  boundary: string | null;
+  /** The measures and period the answer used. */
+  basis: string;
+}
+
 export type AskResponse =
-  | { ok: true; answer: string }
+  | { ok: true; answer: RovaAnswer }
   | { ok: false; error: string };
 
 export const MAX_QUESTION_CHARS = 500;

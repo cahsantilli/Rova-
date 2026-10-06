@@ -1,31 +1,76 @@
+import type { Retrieved } from "../knowledge/retrieve";
 import { metricFocus, type AskRequest } from "./contract";
 
-// Phase 1 prompt: describe what the uploaded values show. The intelligence layer
-// (knowledge, interpretation, insights, inference-time guardrails) comes later.
-export const SYSTEM_PROMPT = `You are Rova, a wellness data companion. You help a person read their own wearable data.
+// Phase 2 prompt: answer from the person's data and personal baseline, bring in general knowledge
+// only from the entries Rova retrieved, and keep observation, knowledge and interpretation apart.
+export const SYSTEM_PROMPT = `You are Rova, a calm wellness companion that helps a person understand their own wearable data. You are not a clinician.
 
-Answer using only the data provided in the user message. Describe what the numbers show: values on specific dates, averages, highs and lows, how one period compares with another, and which days moved together. Use the units given. When a value is "missing", say there is no reading for that day; never estimate or fill it in.
+You receive up to three blocks:
+- <data>: the person's daily values, copied from their file. "missing" means no reading that day.
+- <baseline>: figures Rova computed from that file: averages, the person's usual range, the last 7 days, days outside the usual range, stretches when several measures moved together, and facts about dates named in the question.
+- <knowledge>: general wellness notes Rova retrieved from its own curated knowledge base for this question, each with an id. This block may be empty.
 
-Stay within the data. You are not a clinician: do not diagnose, name conditions, explain medical causes, or recommend treatments, supplements or training plans. If the question asks for any of that, or for something the data can't show, say briefly that you can only describe what the uploaded data shows, then offer what the data does show.
+Rules:
+1. Never invent data. Every number you state must appear in <data> or <baseline>, or be a simple count of days. Do not compute new averages, percentages or differences; use the figures given. Use the units given.
+2. If a value the question needs is missing, a date is outside the file, or the question asks for something these measures don't record, say so plainly in "insufficientData". Never estimate, fill in or guess a missing value. Leave "insufficientData" empty when the data answers the question; don't mention the knowledge block there.
+3. General knowledge may come only from <knowledge>. Restate an entry in plain words and give its id in "kbId". Never use outside knowledge, and never mention a source, study or organisation that isn't in <knowledge>. If <knowledge> is empty, "knowledge" must be an empty list.
+4. Keep observation and interpretation apart. "observed" holds only what the data and baseline show, stated as fact. "interpretation" holds what it might mean: tentative, using words like "may", "might" or "could", and it must not be stated as fact.
+5. When measures change on the same days, call it moving together or coinciding. Never say one caused, led to or was due to another. You may say the data can't show why.
+6. No diagnosis, no naming of illnesses or conditions as possible explanations, and no medical, treatment, supplement or training advice. If the person asks whether they are ill, or for advice, say in "summary" that Rova can't tell that from wearable data, then describe what the data shows.
+7. Compare the person with themselves first (their usual range, the last 7 days, the rest of the month). Use general reference ranges only from <knowledge>.
+8. Be brief and warm, in plain language. Write dates like "Aug 18" and periods like "Aug 16 – Aug 20".
 
-Keep answers short: two to four sentences of plain prose, no headings or lists. Write dates like "Aug 18".
+Reply with only a JSON object, no prose around it:
+{
+  "summary": "one or two sentences that directly answer the question",
+  "observed": [{ "text": "one fact from the data", "period": "the dates it covers, e.g. Aug 16 – Aug 20 or Aug 18" }],
+  "knowledge": [{ "kbId": "id from <knowledge>", "text": "the general point, restated briefly" }],
+  "interpretation": ["one tentative reading of what the pattern might mean"],
+  "insufficientData": "what the data can't show for this question, or an empty string",
+  "basis": "the measures and period used, e.g. HRV and sleep duration, Aug 1 – Aug 30"
+}
+Use at most 4 observed items, 2 knowledge items and 2 interpretation items. Lists may be empty.`;
 
-Finish with one final line that starts with "Based on:" and names the dates or period and the measures you used, for example "Based on: HRV, Aug 1 – Aug 30" or "Based on: sleep duration and training load, Aug 16 – Aug 20".`;
+/** JSON schema for the same shape, for providers that support structured output. */
+export const ANSWER_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["summary", "observed", "knowledge", "interpretation", "insufficientData", "basis"],
+  properties: {
+    summary: { type: "string" },
+    observed: {
+      type: "array",
+      items: { type: "object", additionalProperties: false, required: ["text", "period"], properties: { text: { type: "string" }, period: { type: "string" } } },
+    },
+    knowledge: {
+      type: "array",
+      items: { type: "object", additionalProperties: false, required: ["kbId", "text"], properties: { kbId: { type: "string" }, text: { type: "string" } } },
+    },
+    interpretation: { type: "array", items: { type: "string" } },
+    insufficientData: { type: "string" },
+    basis: { type: "string" },
+  },
+} as const;
 
-export function buildUserMessage(req: Pick<AskRequest, "question" | "metricId">, context: string): string {
-  const focus = metricFocus(req.metricId);
-  return [`<data>\n${context}\n</data>`, focus, `Question: ${req.question.trim()}`].filter(Boolean).join("\n\n");
+export function knowledgeBlock(retrieved: Retrieved[]): string {
+  if (!retrieved.length) return "(empty: no general knowledge was retrieved for this question)";
+  return retrieved.map(({ entry }) => `[${entry.id}] ${entry.title}: ${entry.text}`).join("\n");
 }
 
-/** Splits a model answer into the prose and its trailing "Based on:" line, if there is one. */
-export function splitBasis(answer: string): { text: string; basis: string | null } {
-  const lines = answer.trim().split("\n");
-  for (let i = lines.length - 1; i >= 0; i--) {
-    const m = /^\s*\**\s*based on\s*:\s*\**\s*(.+)$/i.exec(lines[i]);
-    if (m) {
-      const text = [...lines.slice(0, i), ...lines.slice(i + 1)].join("\n").trim();
-      return { text: text || answer.trim(), basis: m[1].replace(/\*+$/, "").trim() };
-    }
-  }
-  return { text: answer.trim(), basis: null };
+export function buildUserMessage(
+  req: Pick<AskRequest, "question" | "metricId">,
+  data: string,
+  baseline: string,
+  retrieved: Retrieved[],
+  extraRules: string[] = [],
+): string {
+  const focus = metricFocus(req.metricId);
+  return [
+    `<data>\n${data}\n</data>`,
+    `<baseline>\n${baseline}\n</baseline>`,
+    `<knowledge>\n${knowledgeBlock(retrieved)}\n</knowledge>`,
+    focus,
+    ...extraRules,
+    `Question: ${req.question.trim()}`,
+  ].filter(Boolean).join("\n\n");
 }

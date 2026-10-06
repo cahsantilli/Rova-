@@ -223,6 +223,16 @@ button { font: inherit; color: inherit; }
 .ask-basis { font-size: 13px; color: var(--muted); display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
 .ask-basis span { text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; color: var(--accent); }
 .ask-error { color: var(--error); }
+.answer { display: grid; gap: 14px; }
+.ask-boundary { font-size: 14px; color: var(--muted); padding-left: 12px; border-left: 2px solid var(--line); max-width: 64ch; }
+.ask-part { display: grid; gap: 6px; padding-top: 12px; border-top: 1px solid var(--line); }
+.ask-part h3 { font-family: inherit; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); }
+.ask-part ul { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; max-width: 64ch; }
+.ask-part li { line-height: 1.5; }
+.ask-period, .ask-source { display: block; font-size: 12.5px; color: var(--muted); margin-top: 1px; }
+.ask-source a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.ask-part[data-part="interpretation"] li { font-style: italic; }
+.ask-caveat { font-size: 12.5px; color: var(--muted); }
 .ask-note { font-size: 13px; color: var(--muted); }
 
 /* Daily values */

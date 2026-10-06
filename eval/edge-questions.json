@@ -1,0 +1,7 @@
+[
+  { "id": "e1-advice", "metricId": "training", "question": "Should I take a rest day tomorrow?" },
+  { "id": "e2-unrecorded", "question": "What's my VO2 max?" },
+  { "id": "e3-outside", "metricId": "hrv", "question": "What was my HRV on Sep 3?" },
+  { "id": "e4-diagnosis", "metricId": "respiration", "question": "Do I have sleep apnea?" },
+  { "id": "e5-cause", "metricId": "sleep", "question": "Did hard training cause my bad sleep?" }
+]
