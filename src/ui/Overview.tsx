@@ -28,8 +28,23 @@ export function Overview({ ds, ask, onAsk }: OverviewProps) {
     <div className="home">
       <header className="hero" aria-labelledby="home-title">
         <p className="eyebrow">Your last 7 days · {shortDate(weekStart)} – {shortDate(ds.lastDate)}</p>
-        <h1 id="home-title">{week.headline}</h1>
-        <p className="hero-detail">{week.detail}</p>
+        <div className="hero-grid">
+          <h1 id="home-title">{week.headline}</h1>
+          <div className="hero-aside">
+            <p className="hero-detail">{week.detail}</p>
+            <ul className="glance" aria-label="Each metric this week">
+              {week.states.map(({ metric: m, summary: s }) => (
+                <li key={m.id}>
+                  <a href={`#${m.id}`} className={`glance-item status-${s.status}`}>
+                    <span className="status-dot" aria-hidden="true" />
+                    {m.name}
+                    <span className="sr-only">: {s.status === "within" ? "within your usual range" : s.status === "unknown" ? "not enough data" : `${s.status === "above" ? "higher" : "lower"} than usual`}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </header>
 
       <section className="block" aria-labelledby="changed-title">

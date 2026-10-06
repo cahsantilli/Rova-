@@ -115,9 +115,18 @@ button { font: inherit; color: inherit; }
 /* Overview: one reading column, sections separated by space and a hairline, not boxes */
 .home { display: grid; grid-template-columns: minmax(0, 1fr); gap: 64px; }
 .home > *, .block > *, .strip > * { min-width: 0; }
-.hero { display: grid; gap: 16px; max-width: 720px; }
-.hero h1 { font-size: clamp(42px, 7.2vw, 72px); line-height: 1.02; font-weight: 300; letter-spacing: -0.025em; }
-.hero-detail { font-size: clamp(18px, 2.2vw, 21px); color: var(--ink-2); max-width: 50ch; }
+/* Hero: the headline owns the left of the page; the right column answers "says who?" at a glance. */
+.hero { display: grid; gap: 22px; padding-top: 8px; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 32px 56px; align-items: end; }
+.hero h1 { font-size: clamp(44px, 8.4vw, 92px); line-height: 0.96; font-weight: 300; letter-spacing: -0.035em; max-width: 9em; }
+.hero-aside { display: grid; gap: 20px; padding-bottom: 10px; }
+.hero-detail { font-size: 18px; line-height: 1.5; color: var(--ink-2); max-width: 34ch; }
+.glance { list-style: none; margin: 0; padding: 16px 0 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 20px; }
+.glance-item { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink-2); text-decoration: none; white-space: nowrap; }
+.glance-item:hover { color: var(--blue-ink); }
+.glance-item.status-above .status-dot, .glance-item.status-below .status-dot { background: var(--attention); box-shadow: none; }
+.glance-item.status-unknown .status-dot { background: transparent; box-shadow: inset 0 0 0 1px var(--faint); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 .block { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; padding-top: 28px; border-top: 1px solid var(--line); }
 .block-title { font-family: var(--body); font-size: 12.5px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
@@ -317,6 +326,9 @@ button { font: inherit; color: inherit; }
   .page { padding: 36px 16px 88px; }
   .topbar { padding: 16px 16px 0; }
   .home { gap: 48px; }
+  .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .hero h1 { font-size: clamp(44px, 13vw, 60px); }
+  .hero-aside { padding-bottom: 0; }
   .change { grid-template-columns: minmax(0, 1fr); gap: 4px; }
   .change .rangebar { margin-top: 8px; }
   .featured { grid-template-columns: minmax(0, 1fr); gap: 12px; }
