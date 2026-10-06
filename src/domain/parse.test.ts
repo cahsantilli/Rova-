@@ -117,3 +117,24 @@ describe("validation", () => {
     expect(ds.days.map((d) => d.date)).toEqual(["2026-08-01", "2026-08-02"]);
   });
 });
+
+describe("usual range", () => {
+  const ds = ok(SUPPLIED);
+  it("is the period average ± one sample standard deviation of available readings", () => {
+    const s = summarize(ds, "hrv_ms");
+    const vals = ds.days.map((d) => d.values.hrv_ms!.value);
+    const m = vals.reduce((a, b) => a + b, 0) / vals.length;
+    const sd = Math.sqrt(vals.reduce((a, v) => a + (v - m) ** 2, 0) / (vals.length - 1));
+    expect(s.usual!.low).toBeCloseTo(m - sd, 10);
+    expect(s.usual!.high).toBeCloseTo(m + sd, 10);
+  });
+  it("puts every metric's last 7 days within the usual range for the supplied data", () => {
+    for (const f of ["sleep_duration_hours", "hrv_ms", "resting_hr_bpm", "training_load", "temperature_deviation_c", "sleeping_respiration_bpm"] as const) {
+      expect(summarize(ds, f).status).toBe("within");
+    }
+  });
+  it("is unknown with too few readings", () => {
+    const one = ok(`${HEADER}\n2026-08-01,7,80,50,55,40,30,0,15`);
+    expect(summarize(one, "hrv_ms").status).toBe("unknown");
+  });
+});

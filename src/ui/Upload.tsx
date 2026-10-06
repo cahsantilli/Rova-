@@ -16,11 +16,11 @@ export function Upload({ onFile, busy, errors, errorFile }: UploadProps) {
   return (
     <main className="upload">
       <div className="upload-intro">
-        <p className="eyebrow">Data · Context · Understanding</p>
-        <h1>See what your wellness data says about your own routine.</h1>
+        <p className="eyebrow">Your wellness companion</p>
+        <h1>How are you doing? Let’s look at your own data.</h1>
         <p className="lede">
-          Upload a CSV export and Rova lays out sleep, HRV, resting heart rate, training, temperature and sleeping
-          respiration against your own history.
+          Upload a CSV export from your tracker. Rova shows how your sleep, HRV, resting heart rate, training, temperature
+          and breathing compare with your own usual range.
         </p>
       </div>
 

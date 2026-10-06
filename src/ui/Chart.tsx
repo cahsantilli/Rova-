@@ -7,27 +7,15 @@ interface ChartProps {
   points: Point[];
   field: FieldKey;
   kind: "line" | "bar";
-  /** Personal average for the period, drawn as a reference line. */
-  average: number | null;
+  /** The person's usual range, drawn as a soft band. */
+  band: { low: number; high: number } | null;
   /** Number of trailing days to tint as "recent". */
   recentDays?: number;
   height?: number;
   label: string;
 }
 
-const PAD = { top: 16, right: 12, bottom: 28, left: 40 };
-
-function niceDomain(values: number[], kind: "line" | "bar", includeZero: boolean): [number, number] {
-  let lo = Math.min(...values);
-  let hi = Math.max(...values);
-  if (kind === "bar" || includeZero) {
-    lo = Math.min(lo, 0);
-    hi = Math.max(hi, 0);
-  }
-  if (lo === hi) { lo -= 1; hi += 1; }
-  const pad = (hi - lo) * 0.15;
-  return [kind === "bar" && lo >= 0 ? 0 : lo - pad, hi + pad];
-}
+const PAD = { top: 22, right: 8, bottom: 26, left: 34 };
 
 /** Round-number step (1, 2, 2.5 or 5 × 10^k) giving about `target` gridlines. */
 function niceStep(range: number, target = 3): number {
@@ -47,7 +35,7 @@ function stepDecimals(step: number): number {
   return Math.max(0, -Math.floor(Math.log10(step) + 1e-9));
 }
 
-export function Chart({ points, field, kind, average, recentDays = 0, height = 220, label }: ChartProps) {
+export function Chart({ points, field, kind, band, recentDays = 0, height = 220, label }: ChartProps) {
   const wrap = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(640);
   const [hover, setHover] = useState<number | null>(null);
@@ -65,10 +53,16 @@ export function Chart({ points, field, kind, average, recentDays = 0, height = 2
     return <div className="chart-empty">No readings in this period.</div>;
   }
 
-  const includeZero = field === "temperature_deviation_c";
-  const [lo, hi] = niceDomain(average !== null ? [...values, average] : values, kind, includeZero);
+  const includeZero = kind === "bar" || field === "temperature_deviation_c";
+  let lo = Math.min(...values, ...(band ? [band.low] : []), ...(includeZero ? [0] : []));
+  let hi = Math.max(...values, ...(band ? [band.high] : []), ...(includeZero ? [0] : []));
+  if (lo === hi) { lo -= 1; hi += 1; }
+  const pad = (hi - lo) * 0.12;
+  if (!(kind === "bar" && lo >= 0)) lo -= pad;
+  hi += pad;
   const step = niceStep(hi - lo);
   const tickDecimals = stepDecimals(step);
+
   const innerW = width - PAD.left - PAD.right;
   const innerH = height - PAD.top - PAD.bottom;
   const n = points.length;
@@ -89,46 +83,38 @@ export function Chart({ points, field, kind, average, recentDays = 0, height = 2
   });
   if (cur) segments.push(cur);
 
+  const lastIdx = points.map((p) => p.value !== null).lastIndexOf(true);
   const recentStart = recentDays > 0 ? n - Math.min(recentDays, n) : n;
   const xTickIdx = points.map((_, i) => i).filter((i) => i === 0 || i === n - 1 || (i % 7 === 0 && n - 1 - i > 3));
   const hp = hover !== null ? points[hover] : null;
-  const barW = Math.max(2, Math.min(18, slot * 0.6));
+  const barW = Math.max(2, Math.min(14, slot * 0.5));
   const zeroY = y(Math.max(lo, 0));
+  const tickExtra = Math.max(0, tickDecimals - FIELDS[field].decimals);
 
   return (
     <div className="chart" ref={wrap}>
       <svg width={width} height={height} role="img" aria-label={label} onMouseLeave={() => setHover(null)}>
         {recentStart < n && (
           <g>
-            <rect className="chart-recent" x={PAD.left + slot * recentStart} y={PAD.top} width={slot * (n - recentStart)} height={innerH} />
-            <text className="chart-recent-label" x={PAD.left + slot * n - 4} y={PAD.top + 11} textAnchor="end">Last {n - recentStart} days</text>
+            <rect className="chart-recent" x={PAD.left + slot * recentStart} y={PAD.top - 18} width={slot * (n - recentStart)} height={innerH + 18} rx={8} />
+            <text className="chart-recent-label" x={PAD.left + slot * (recentStart + (n - recentStart) / 2)} y={PAD.top - 6} textAnchor="middle">Last 7 days</text>
           </g>
         )}
+        {band && <rect className="chart-band" x={PAD.left} y={y(band.high)} width={innerW} height={Math.max(1, y(band.low) - y(band.high))} />}
         {ticks(lo, hi, step).map((t) => (
-          <g key={t}>
-            <line className="chart-grid" x1={PAD.left} x2={width - PAD.right} y1={y(t)} y2={y(t)} />
-            <text className="chart-axis" x={PAD.left - 8} y={y(t) + 4} textAnchor="end">{formatNumber(field, t, Math.max(0, tickDecimals - FIELDS[field].decimals))}</text>
-          </g>
+          <text key={t} className="chart-axis" x={PAD.left - 8} y={y(t) + 4} textAnchor="end">{formatNumber(field, t, tickExtra)}</text>
         ))}
-        {includeZero && <line className="chart-zero" x1={PAD.left} x2={width - PAD.right} y1={y(0)} y2={y(0)} />}
-        {average !== null && (
-          <g>
-            <line className="chart-avg" x1={PAD.left} x2={width - PAD.right} y1={y(average)} y2={y(average)} />
-          </g>
-        )}
+        {includeZero && kind === "line" && <line className="chart-zero" x1={PAD.left} x2={width - PAD.right} y1={y(0)} y2={y(0)} />}
         {points.map((p, i) =>
           p.value === null ? (
-            <g key={p.date} className="chart-missing">
-              <line x1={x(i)} x2={x(i)} y1={PAD.top + 4} y2={PAD.top + innerH} />
-            </g>
+            <line key={p.date} className="chart-missing" x1={x(i)} x2={x(i)} y1={PAD.top + 6} y2={PAD.top + innerH} />
           ) : null,
         )}
         {kind === "line" ? (
           <g>
             {segments.map((d, i) => <path key={i} className="chart-line" d={d} />)}
-            {points.map((p, i) => p.value !== null && (
-              <circle key={p.date} className={`chart-dot${hover === i ? " is-active" : ""}`} cx={x(i)} cy={y(p.value)} r={hover === i ? 4.5 : 2.5} />
-            ))}
+            {hover !== null && hp?.value != null && <circle className="chart-dot is-active" cx={x(hover)} cy={y(hp.value)} r={4.5} />}
+            {lastIdx >= 0 && hover !== lastIdx && <circle className="chart-dot is-last" cx={x(lastIdx)} cy={y(points[lastIdx].value!)} r={4} />}
           </g>
         ) : (
           <g>
@@ -140,13 +126,13 @@ export function Chart({ points, field, kind, average, recentDays = 0, height = 2
                 y={Math.min(y(p.value), zeroY)}
                 width={barW}
                 height={Math.max(1, Math.abs(zeroY - y(p.value)))}
-                rx={2}
+                rx={barW / 2}
               />
             ))}
           </g>
         )}
         {xTickIdx.map((i) => (
-          <text key={i} className="chart-axis" x={x(i)} y={height - 8} textAnchor={i === 0 ? "start" : i === n - 1 ? "end" : "middle"} dx={i === 0 ? -slot / 2 : i === n - 1 ? slot / 2 : 0}>
+          <text key={i} className="chart-axis" x={x(i)} y={height - 6} textAnchor={i === 0 ? "start" : i === n - 1 ? "end" : "middle"} dx={i === 0 ? -slot / 2 : i === n - 1 ? slot / 2 : 0}>
             {shortDate(points[i].date)}
           </text>
         ))}
@@ -165,15 +151,15 @@ export function Chart({ points, field, kind, average, recentDays = 0, height = 2
   );
 }
 
-/** Small trend line for the overview list. No axes, no interaction. */
-export function Sparkline({ points, width = 120, height = 32 }: { points: Point[]; width?: number; height?: number }) {
+/** Small trend line for tiles. No axes, no interaction. */
+export function Sparkline({ points, band, width = 132, height = 36 }: { points: Point[]; band?: { low: number; high: number } | null; width?: number; height?: number }) {
   const vals = points.flatMap((p) => (p.value === null ? [] : [p.value]));
   if (vals.length < 2) return <svg width={width} height={height} aria-hidden="true" />;
-  const lo = Math.min(...vals);
-  const hi = Math.max(...vals);
+  const lo = Math.min(...vals, ...(band ? [band.low] : []));
+  const hi = Math.max(...vals, ...(band ? [band.high] : []));
   const span = hi - lo || 1;
-  const x = (i: number) => 2 + (i / (points.length - 1)) * (width - 4);
-  const y = (v: number) => 3 + (1 - (v - lo) / span) * (height - 6);
+  const x = (i: number) => 3 + (i / (points.length - 1)) * (width - 6);
+  const y = (v: number) => 4 + (1 - (v - lo) / span) * (height - 8);
   let d = "";
   let pen = false;
   points.forEach((p, i) => {
@@ -181,12 +167,12 @@ export function Sparkline({ points, width = 120, height = 32 }: { points: Point[
     d += `${pen ? "L" : "M"}${x(i).toFixed(1)},${y(p.value).toFixed(1)}`;
     pen = true;
   });
-  const last = [...points].reverse().find((p) => p.value !== null)!;
-  const li = points.lastIndexOf(last);
+  const li = points.map((p) => p.value !== null).lastIndexOf(true);
   return (
-    <svg width={width} height={height} className="spark" aria-hidden="true">
+    <svg width={width} height={height} className="spark" aria-hidden="true" viewBox={`0 0 ${width} ${height}`}>
+      {band && <rect className="spark-band" x={0} y={y(band.high)} width={width} height={Math.max(1, y(band.low) - y(band.high))} rx={3} />}
       <path d={d} />
-      <circle cx={x(li)} cy={y(last.value!)} r={2.5} />
+      <circle cx={x(li)} cy={y(points[li].value!)} r={3} />
     </svg>
   );
 }

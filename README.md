@@ -34,7 +34,8 @@ CHROMIUM=/path/to/chromium npm run e2e   # upload → metrics → history, deskt
 
 ```
 src/domain/        CSV contract, parsing + validation, stats, formatting (pure, tested)
-src/ui/            Upload, Overview, MetricView, Chart (hand-drawn SVG), Ask
+src/ui/            Upload, Overview ("How am I doing?"), MetricView, Chart (hand-drawn SVG), Ask
+src/domain/summary.ts  Plain-language week summary: last 7 days vs your usual range (deterministic)
 src/intelligence/  The boundary to the AI layer: contract, shared prompt, browser client
                    (Artifact runtime when hosted on claude.ai, otherwise the Rova server)
 server/            Small Node server: static files + /api/intelligence/*

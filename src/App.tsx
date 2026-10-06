@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { MAX_FILE_BYTES, parseWellnessCsv, type Dataset, type ParseIssue } from "./domain/parse";
-import { METRICS, metricById, type MetricId } from "./domain/schema";
+import { metricById, type MetricId } from "./domain/schema";
+import { inSentence } from "./domain/summary";
 import { rangeLabel } from "./domain/format";
 import { fetchIntelligenceStatus } from "./intelligence/client";
 import { Upload } from "./ui/Upload";
@@ -99,42 +100,34 @@ export function App() {
   const { ds, csv } = loaded;
   const metric = route ? metricById(route) : undefined;
 
+  const range = rangeLabel(ds.firstDate, ds.lastDate);
+
   return (
     <div className="app">
       <TopBar>
-        <div className="file-meta">
-          <span className="file-name" title={ds.fileName}>{ds.fileName}</span>
-          <span className="muted small">{rangeLabel(ds.firstDate, ds.lastDate)}</span>
-        </div>
-        <button className="button ghost" onClick={reset}>Upload another file</button>
+        <span className="file-meta" title={ds.fileName}>{range}</span>
+        <button className="button ghost small-button" onClick={reset}>Upload another file</button>
       </TopBar>
 
-      <div className="layout">
-        <nav className="nav" aria-label="Metrics">
-          <a href="#overview" className={!metric ? "is-active" : undefined} aria-current={!metric ? "page" : undefined}>Overview</a>
-          {METRICS.map((m) => (
-            <a key={m.id} href={`#${m.id}`} className={metric?.id === m.id ? "is-active" : undefined} aria-current={metric?.id === m.id ? "page" : undefined}>
-              {m.name}
-            </a>
-          ))}
-        </nav>
-
-        <main className="content">
-          {metric ? (
-            <MetricView
-              key={metric.id}
-              ds={ds}
-              metric={metric}
-              aside={askAvailable ? <Ask csv={csv} fileName={ds.fileName} metricId={metric.id} metricName={metric.name} /> : undefined}
-            />
-          ) : (
-            <>
-              <Overview ds={ds} onOpen={go} />
-              {askAvailable && <Ask csv={csv} fileName={ds.fileName} />}
-            </>
-          )}
-        </main>
-      </div>
+      <main className="page">
+        {metric ? (
+          <MetricView
+            key={metric.id}
+            ds={ds}
+            metric={metric}
+            ask={askAvailable ? (
+              <Ask csv={csv} fileName={ds.fileName} metricId={metric.id} subject={`your ${inSentence(metric.name)}`} questions={metric.questions} scope={`the values in your file, ${range}`} />
+            ) : undefined}
+          />
+        ) : (
+          <Overview
+            ds={ds}
+            ask={askAvailable ? (
+              <Ask csv={csv} fileName={ds.fileName} subject="your data" questions={["How was this week compared with the rest of the month?", "Which days stood out the most?"]} scope={`the values in your file, ${range}`} />
+            ) : undefined}
+          />
+        )}
+      </main>
     </div>
   );
 }

@@ -1,103 +1,113 @@
-import { useState } from "react";
 import type { Dataset } from "../domain/parse";
-import { FIELDS, type FieldKey, type MetricSpec } from "../domain/schema";
+import { FIELDS, METRICS, type FieldKey, type MetricSpec } from "../domain/schema";
 import { summarize, type FieldSummary } from "../domain/stats";
-import { dayDate, formatDelta, formatValue, shortDate } from "../domain/format";
-import { Chart } from "./Chart";
+import { dayDate, formatValue, shortDate } from "../domain/format";
+import { Chart, Sparkline } from "./Chart";
+import { StatusChip } from "./Status";
 
-export function MetricView({ ds, metric, aside }: { ds: Dataset; metric: MetricSpec; aside?: React.ReactNode }) {
-  const primary = summarize(ds, metric.primary);
-  const secondary = metric.secondary ? summarize(ds, metric.secondary) : null;
-  const periodDays = primary.series.length;
+/** Reads the usual range as a short phrase, e.g. "48–57 ms". */
+function rangeText(s: FieldSummary): string {
+  if (!s.usual) return "";
+  const unit = FIELDS[s.field].unit;
+  const lo = formatValue(s.field, s.usual.low).replace(unit ? ` ${unit}` : "", "");
+  // Keep the range on one line: "48–57 ms".
+  return `${lo}\u2060–\u2060${formatValue(s.field, s.usual.high).replace(" ", "\u00a0")}`;
+}
+
+function recentSentence(s: FieldSummary): string {
+  if (s.recentAvg === null) return "There are no readings in the last 7 days.";
+  const avg = formatValue(s.field, s.recentAvg, 1);
+  const partial = s.recentAvailable < s.recentWindowDays ? ` (${s.recentAvailable} of ${s.recentWindowDays} days had a reading)` : "";
+  switch (s.status) {
+    case "within": return `Your last 7 days averaged ${avg}${partial}, within your usual range of ${rangeText(s)}.`;
+    case "above": return `Your last 7 days averaged ${avg}${partial}, above your usual range of ${rangeText(s)}.`;
+    case "below": return `Your last 7 days averaged ${avg}${partial}, below your usual range of ${rangeText(s)}.`;
+    default: return `Your last 7 days averaged ${avg}${partial}. There aren't enough readings yet to know your usual range.`;
+  }
+}
+
+export function MetricView({ ds, metric, ask }: { ds: Dataset; metric: MetricSpec; ask?: React.ReactNode }) {
+  const s = summarize(ds, metric.primary);
+  const second = metric.secondary ? summarize(ds, metric.secondary) : null;
+  const periodDays = s.series.length;
+  const idx = METRICS.findIndex((m) => m.id === metric.id);
+  const next = METRICS[(idx + 1) % METRICS.length];
 
   return (
-    <section className="metric" aria-labelledby="metric-title">
-      <header className="view-head">
-        <h2 id="metric-title">{metric.name}</h2>
-        <p className="muted">{metric.about}</p>
+    <article className="detail" aria-labelledby="metric-title">
+      <a className="back" href="#overview">← How am I doing</a>
+
+      {/* 1. Current value */}
+      <header className="detail-head">
+        <h1 id="metric-title">{metric.name}</h1>
+        <p className="detail-value">
+          <span className="value">{formatValue(s.field, s.latest?.value ?? null)}</span>
+          <span className="detail-when">
+            {FIELDS[s.field].label !== metric.name && `${FIELDS[s.field].label} · `}
+            {s.latest ? (s.latestIsStale ? `last reading ${dayDate(s.latest.date)}` : dayDate(s.latest.date)) : "no readings"}
+          </span>
+        </p>
+        <StatusChip status={s.status} />
+        <p className="detail-sentence">{recentSentence(s)}</p>
       </header>
 
-      <FieldBlock s={primary} kind={metric.chart} periodDays={periodDays} lead />
-      {secondary && <FieldBlock s={secondary} kind={metric.secondary === "training_duration_min" ? "bar" : "line"} periodDays={periodDays} />}
+      {/* 2. Historical context */}
+      <section className="detail-section" aria-label="History">
+        <Chart
+          points={s.series}
+          field={s.field}
+          kind={metric.chart}
+          band={s.usual}
+          recentDays={7}
+          height={230}
+          label={`${FIELDS[s.field].label}, daily values from ${shortDate(s.series[0].date)} to ${shortDate(s.series[periodDays - 1].date)}`}
+        />
+        <p className="legend">
+          <span className="legend-band" aria-hidden="true" /> Your usual range
+          {s.periodMin && s.periodMax && <span className="legend-sep">Lowest {formatValue(s.field, s.periodMin.value)} on {shortDate(s.periodMin.date)}, highest {formatValue(s.field, s.periodMax.value)} on {shortDate(s.periodMax.date)}</span>}
+          {s.missingDates.length > 0 && (
+            <span className="legend-sep"><span className="legend-missing" aria-hidden="true" /> No reading on {s.missingDates.map(shortDate).join(", ")}</span>
+          )}
+        </p>
 
-      {aside}
-
-      <History ds={ds} fields={[metric.primary, ...(metric.secondary ? [metric.secondary] : [])]} />
-    </section>
-  );
-}
-
-function FieldBlock({ s, kind, periodDays, lead = false }: { s: FieldSummary; kind: "line" | "bar"; periodDays: number; lead?: boolean }) {
-  const spec = FIELDS[s.field];
-  return (
-    <div className={`field-block${lead ? " is-lead" : ""}`}>
-      <div className="field-head">
-        <div>
-          <p className="field-label">{spec.label}</p>
-          <p className="field-latest">
-            <span className="value">{formatValue(s.field, s.latest?.value ?? null)}</span>
-            <span className="muted small">
-              {s.latest ? (s.latestIsStale ? `last reading, ${dayDate(s.latest.date)}` : dayDate(s.latest.date)) : "no readings"}
-            </span>
-          </p>
-        </div>
-        <dl className="stats">
-          <div>
-            <dt>Last 7 days</dt>
-            <dd>{formatValue(s.field, s.recentAvg, 1)}<span className="muted small"> avg{s.recentAvailable < s.recentWindowDays ? ` · ${s.recentAvailable} of ${s.recentWindowDays} days` : ""}</span></dd>
+        {second && (
+          <div className="companion">
+            <div className="companion-text">
+              <span className="companion-label">{FIELDS[second.field].label}</span>
+              <span className="companion-value">{formatValue(second.field, second.latest?.value ?? null)}</span>
+              <span className="companion-sub">7-day average {formatValue(second.field, second.recentAvg, 1)}</span>
+            </div>
+            <StatusChip status={second.status} />
+            <Sparkline points={second.series} band={second.usual} width={150} height={40} />
           </div>
-          <div>
-            <dt>{periodDays}-day average</dt>
-            <dd>{formatValue(s.field, s.periodAvg, 1)}{s.available < periodDays && <span className="muted small"> · {s.available} of {periodDays} days</span>}</dd>
-          </div>
-          <div>
-            <dt>Difference</dt>
-            <dd>{s.recentDelta !== null ? formatDelta(s.field, s.recentDelta) : "—"}</dd>
-          </div>
-          <div>
-            <dt>Range</dt>
-            <dd>
-              {s.periodMin && s.periodMax ? (
-                <>
-                  {formatValue(s.field, s.periodMin.value)} – {formatValue(s.field, s.periodMax.value)}
-                  <span className="muted small block">low {shortDate(s.periodMin.date)}, high {shortDate(s.periodMax.date)}</span>
-                </>
-              ) : "—"}
-            </dd>
-          </div>
-        </dl>
-      </div>
-      <Chart
-        points={s.series}
-        field={s.field}
-        kind={kind}
-        average={s.periodAvg}
-        recentDays={7}
-        height={lead ? 240 : 170}
-        label={`${spec.label}, daily values from ${shortDate(s.series[0].date)} to ${shortDate(s.series[s.series.length - 1].date)}`}
-      />
-      <p className="legend muted small">
-        <span className="legend-avg" aria-hidden="true" /> your {periodDays}-day average
-        {s.missingDates.length > 0 && (
-          <>
-            <span className="legend-missing" aria-hidden="true" /> no reading ({s.missingDates.map(shortDate).join(", ")})
-          </>
         )}
-      </p>
-    </div>
+      </section>
+
+      {/* 3. Simple explanation */}
+      <section className="detail-section explain">
+        <h2>About {metric.name === metric.name.toUpperCase() ? metric.name : metric.name.toLowerCase()}</h2>
+        <p>{metric.about}</p>
+        <p className="muted">Your usual range is where most of your days fell across these {periodDays} days (your average, give or take one standard deviation).</p>
+      </section>
+
+      {/* 4. Ask about this metric */}
+      {ask}
+
+      <details className="daily">
+        <summary>Daily values</summary>
+        <DailyTable ds={ds} fields={[metric.primary, ...(metric.secondary ? [metric.secondary] : [])]} />
+      </details>
+
+      <a className="next" href={`#${next.id}`}>Next: {next.name} →</a>
+    </article>
   );
 }
 
-function History({ ds, fields }: { ds: Dataset; fields: FieldKey[] }) {
-  const [expanded, setExpanded] = useState(false);
+function DailyTable({ ds, fields }: { ds: Dataset; fields: FieldKey[] }) {
   const rows = fields.map((f) => summarize(ds, f).series);
   const dates = rows[0].map((p) => p.date).reverse();
-  const shown = expanded ? dates : dates.slice(0, 7);
-  const valueFor = (fi: number, date: string) => rows[fi].find((p) => p.date === date)!.value;
-
   return (
-    <div className="history">
-      <h3>Daily history</h3>
+    <div className="table-wrap">
       <table>
         <thead>
           <tr>
@@ -106,22 +116,17 @@ function History({ ds, fields }: { ds: Dataset; fields: FieldKey[] }) {
           </tr>
         </thead>
         <tbody>
-          {shown.map((d) => (
+          {dates.map((d) => (
             <tr key={d}>
               <th scope="row">{dayDate(d)}</th>
-              {fields.map((f, fi) => {
-                const v = valueFor(fi, d);
-                return <td key={f} className={v === null ? "missing" : undefined}>{v === null ? "No reading" : formatValue(f, v)}</td>;
+              {rows.map((series, fi) => {
+                const v = series.find((p) => p.date === d)!.value;
+                return <td key={fi} className={v === null ? "missing" : undefined}>{v === null ? "No reading" : formatValue(fields[fi], v)}</td>;
               })}
             </tr>
           ))}
         </tbody>
       </table>
-      {dates.length > 7 && (
-        <button className="button ghost" onClick={() => setExpanded(!expanded)}>
-          {expanded ? "Show last 7 days" : `Show all ${dates.length} days`}
-        </button>
-      )}
     </div>
   );
 }

@@ -23,7 +23,16 @@ export interface FieldSummary {
   recentAvailable: number;
   /** recentAvg - periodAvg */
   recentDelta: number | null;
+  /** Where most of this person's days fall: period average ± one standard deviation. */
+  usual: { low: number; high: number } | null;
+  /** How the recent average sits against the usual range. */
+  status: UsualStatus;
 }
+
+export type UsualStatus = "within" | "above" | "below" | "unknown";
+
+/** Fewer readings than this and "usual" isn't meaningful. */
+export const MIN_READINGS_FOR_USUAL = 7;
 
 export const RECENT_WINDOW_DAYS = 7;
 
@@ -36,6 +45,11 @@ export function seriesFor(ds: Dataset, field: FieldKey): Point[] {
     out.push({ date: dt, value: cell ? cell.value : null });
   }
   return out;
+}
+
+function stdDev(values: number[]): number {
+  const m = values.reduce((a, b) => a + b, 0) / values.length;
+  return Math.sqrt(values.reduce((a, v) => a + (v - m) ** 2, 0) / (values.length - 1));
 }
 
 function mean(points: Point[]): number | null {
@@ -56,6 +70,15 @@ export function summarize(ds: Dataset, field: FieldKey, windowDays = RECENT_WIND
     if (!max || p.value! > max.value!) max = p;
   }
   const latest = withValue.length ? withValue[withValue.length - 1] : null;
+  let usual: FieldSummary["usual"] = null;
+  if (periodAvg !== null && withValue.length >= MIN_READINGS_FOR_USUAL) {
+    const sd = stdDev(withValue.map((p) => p.value!));
+    usual = { low: periodAvg - sd, high: periodAvg + sd };
+  }
+  let status: UsualStatus = "unknown";
+  if (usual && recentAvg !== null) {
+    status = recentAvg > usual.high ? "above" : recentAvg < usual.low ? "below" : "within";
+  }
   return {
     field,
     series,
@@ -70,5 +93,7 @@ export function summarize(ds: Dataset, field: FieldKey, windowDays = RECENT_WIND
     recentAvg,
     recentAvailable: recent.filter((p) => p.value !== null).length,
     recentDelta: recentAvg !== null && periodAvg !== null ? recentAvg - periodAvg : null,
+    usual,
+    status,
   };
 }
