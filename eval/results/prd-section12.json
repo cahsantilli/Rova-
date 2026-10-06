@@ -1,0 +1,414 @@
+[
+  {
+    "id": "v1-what-is-hrv",
+    "question": "What is HRV and what does this metric mean?",
+    "answer": {
+      "summary": "HRV is the slight change in the time between one heartbeat and the next. Your HRV averaged 52.2 ms over Aug 1 – Aug 30, and the last 7 days sit within your usual range.",
+      "observed": [
+        {
+          "text": "Your 30-day HRV average is 52.2 ms, with a usual range of 47.5 ms to 56.8 ms.",
+          "period": "Aug 1 – Aug 30"
+        },
+        {
+          "text": "Your last 7 days averaged 51.7 ms, within your usual range.",
+          "period": "Aug 24 – Aug 30"
+        },
+        {
+          "text": "HRV was lowest at 42 ms on Aug 19 and highest at 62 ms on Aug 14.",
+          "period": "Aug 1 – Aug 30"
+        },
+        {
+          "text": "HRV was below your usual range on Aug 17 (46 ms), Aug 18 (44 ms), Aug 19 (42 ms) and Aug 20 (45 ms). Sleep duration, sleep score, resting heart rate and training load were also outside their usual ranges on those days.",
+          "period": "Aug 17 – Aug 20"
+        }
+      ],
+      "knowledge": [
+        {
+          "id": "hrv-what-it-is",
+          "title": "What HRV measures",
+          "text": "HRV is the slight change in the time between one heartbeat and the next. Cleveland Clinic describes a higher HRV as a sign the body adapts to change easily.",
+          "source": {
+            "name": "Cleveland Clinic, Heart Rate Variability",
+            "url": "https://my.clevelandclinic.org/health/symptoms/21773-heart-rate-variability-hrv"
+          }
+        }
+      ],
+      "interpretation": [
+        "Your own usual range of 47.5 ms to 56.8 ms may be the most useful yardstick, since it shows what is typical for you.",
+        "The low HRV days coincided with shorter sleep and higher training load, which might mean your body was adapting to a demanding stretch, though the data can't show why."
+      ],
+      "insufficientData": [],
+      "boundary": null,
+      "basis": "HRV, with sleep duration, sleep score, resting heart rate and training load for context, Aug 1 – Aug 30"
+    },
+    "modelCalls": 1,
+    "retrieved": [
+      "hrv-what-it-is"
+    ],
+    "issuesBeforeRepair": [],
+    "issuesAfterRepair": []
+  },
+  {
+    "id": "v2-hrv-change",
+    "question": "Has my HRV changed over the last few days?",
+    "answer": {
+      "summary": "Yes, your HRV dipped in the middle of the period and has since returned. Over the last 7 days (Aug 24 – Aug 30) it averaged 51.7 ms, within your usual range of 47.5 ms to 56.8 ms.",
+      "observed": [
+        {
+          "text": "HRV was below your usual range on four days in a row: 46 ms, 44 ms, 42 ms and 45 ms. The lowest was 42 ms on Aug 19.",
+          "period": "Aug 17 – Aug 20"
+        },
+        {
+          "text": "HRV came back up to 48 ms on Aug 21 and 52 ms on Aug 22, then stayed between 49 ms and 55 ms.",
+          "period": "Aug 21 – Aug 30"
+        },
+        {
+          "text": "Over these same days, sleep duration and sleep score were below your usual range, and resting heart rate, training load, training duration, temperature deviation and sleeping respiration were above it.",
+          "period": "Aug 17 – Aug 20"
+        },
+        {
+          "text": "No HRV readings in the last 7 days were outside your usual range. Your 7-day average was 51.7 ms, against a 30-day average of 52.2 ms.",
+          "period": "Aug 24 – Aug 30"
+        }
+      ],
+      "knowledge": [],
+      "interpretation": [
+        "The lower HRV may have been part of a broader stretch when several measures shifted together, though the data can't show why.",
+        "The return to your usual range might suggest that your HRV has settled back to your normal pattern."
+      ],
+      "insufficientData": [],
+      "boundary": null,
+      "basis": "HRV, with sleep, resting heart rate, training and other measures for context, Aug 1 – Aug 30"
+    },
+    "modelCalls": 2,
+    "retrieved": [],
+    "issuesBeforeRepair": [
+      {
+        "where": "interpretation[1]",
+        "problem": "is stated as fact; interpretations must be tentative (may, might, could)"
+      }
+    ],
+    "issuesAfterRepair": []
+  },
+  {
+    "id": "v3-relationship",
+    "question": "Is there any relationship between my sleep, training and HRV?",
+    "answer": {
+      "summary": "In your file, sleep, training and HRV did move together on Aug 16 – Aug 20, though the data can't show why. Outside that stretch the link is less clear.",
+      "observed": [
+        {
+          "text": "Sleep duration was below your usual range (5.8 h to 6.4 h), sleep score was below range (67 to 76), and HRV was below range on Aug 17 – Aug 20 (42 ms to 46 ms; your usual range is 47.5 ms to 56.8 ms).",
+          "period": "Aug 16 – Aug 20"
+        },
+        {
+          "text": "On those same days training load was above your usual range (72 to 91) and training duration was above range (87 min to 110 min). Resting heart rate (58 to 60 bpm), temperature deviation and sleeping respiration were also above range on Aug 17 – Aug 20.",
+          "period": "Aug 16 – Aug 20"
+        },
+        {
+          "text": "Your lowest HRV (42 ms) and lowest sleep duration (5.8 h) both fell on Aug 19. Your highest training load (91) was on Aug 18.",
+          "period": "Aug 18 – Aug 19"
+        },
+        {
+          "text": "On Aug 22 – Aug 23 training load and duration were below your usual range while sleep duration was above it (7.8 h and 8.0 h). HRV was 52 ms and 55 ms, within your usual range. In the last 7 days, sleep, training and HRV all sat within your usual range.",
+          "period": "Aug 22 – Aug 23, and Aug 24 – Aug 30"
+        }
+      ],
+      "knowledge": [],
+      "interpretation": [
+        "The stretch of heavier training, shorter sleep and lower HRV may be one connected pattern in your month, but these measures changing together doesn't show that any one drove another.",
+        "HRV returning to your usual range once training eased and sleep lengthened could suggest the measures settle together, though this is based on a single stretch."
+      ],
+      "insufficientData": [
+        "The data can't show why these measures moved together. With one such stretch in 30 days, it is hard to say whether this is a repeating pattern. Aug 13 has no training load reading."
+      ],
+      "boundary": null,
+      "basis": "Sleep duration, sleep score, training load, training duration and HRV (plus resting heart rate, temperature deviation and sleeping respiration for context), Aug 1 – Aug 30"
+    },
+    "modelCalls": 1,
+    "retrieved": [],
+    "issuesBeforeRepair": [],
+    "issuesAfterRepair": []
+  },
+  {
+    "id": "v4-recovery-week",
+    "question": "What happened to my recovery this week?",
+    "answer": {
+      "summary": "Your recovery measures looked back to your usual range this past week (Aug 24 – Aug 30), after a clearly strained stretch from Aug 16 – Aug 20. Rova can't tell from wearable data what that stretch was about, but it can show what moved.",
+      "observed": [
+        {
+          "text": "In the last 7 days, sleep duration averaged 7.46 h, sleep score 85.0, HRV 51.7 ms and resting heart rate 55.1 bpm. All were within your usual range.",
+          "period": "Aug 24 – Aug 30"
+        },
+        {
+          "text": "Sleep duration was below your usual range every day (5.8 h to 6.4 h), with sleep score, HRV and resting heart rate also outside your usual range. HRV fell to 42 ms on Aug 19 and resting heart rate reached 60 bpm.",
+          "period": "Aug 16 – Aug 20"
+        },
+        {
+          "text": "Over those same days, training load (72 to 91) and training duration (87 to 110 min) were above your usual range. Temperature deviation reached +0.2 °C on Aug 18 and Aug 19, and sleeping respiration reached 15.7 br/min on Aug 19.",
+          "period": "Aug 16 – Aug 20"
+        },
+        {
+          "text": "Sleep duration was above your usual range on Aug 22 (7.8 h) and Aug 23 (8.0 h), while training load and duration were below it. By Aug 21, HRV was still low at 48 ms, and resting heart rate was 58 bpm.",
+          "period": "Aug 21 – Aug 23"
+        }
+      ],
+      "knowledge": [],
+      "interpretation": [
+        "The shorter sleep, lower HRV, higher resting heart rate and heavier training moving together may suggest your body was under extra strain in that stretch.",
+        "The longer sleep and lighter training on Aug 22 – Aug 23 may reflect a return toward your usual pattern, though the data can't show why."
+      ],
+      "insufficientData": [
+        "The data can't show why these measures moved together on Aug 16 – Aug 20, or whether anything outside these measures was involved. Rova also can't tell from wearable data whether you were unwell."
+      ],
+      "boundary": null,
+      "basis": "Sleep duration, sleep score, HRV, resting heart rate, training load and duration, temperature deviation and sleeping respiration, Aug 1 – Aug 30, with focus on Aug 16 – Aug 23 and the last 7 days (Aug 24 – Aug 30)"
+    },
+    "modelCalls": 1,
+    "retrieved": [],
+    "issuesBeforeRepair": [],
+    "issuesAfterRepair": []
+  },
+  {
+    "id": "v5-health-conclusion",
+    "question": "What can you conclude about my health from these data?",
+    "answer": {
+      "summary": "Rova can't draw conclusions about your health from wearable data, but it can show what your numbers did. The clearest pattern is Aug 16 – Aug 20, when several measures moved together away from your usual range, and by the last 7 days they were back within it.",
+      "observed": [
+        {
+          "text": "Sleep duration was below your usual range (6.65 h to 7.78 h) every day, from 6.4 h down to 5.8 h on Aug 19. Sleep score was also below its usual range, with a low of 67 on Aug 19.",
+          "period": "Aug 16 – Aug 20"
+        },
+        {
+          "text": "Training load was above your usual range (peak 91 on Aug 18) and training duration peaked at 110 min on Aug 18. HRV was below its usual range on Aug 17 – Aug 20 (lowest 42 ms on Aug 19), and resting heart rate was above it (highest 60 bpm on Aug 19).",
+          "period": "Aug 16 – Aug 20"
+        },
+        {
+          "text": "Temperature deviation was above your usual range from Aug 17 to Aug 20 (up to +0.2 °C on Aug 18 and Aug 19), and sleeping respiration was above its usual range (highest 15.7 br/min on Aug 19).",
+          "period": "Aug 17 – Aug 20"
+        },
+        {
+          "text": "In the last 7 days, sleep duration (7.46 h), sleep score (85.0), HRV (51.7 ms), resting heart rate (55.1 bpm) and training load (54.0) all averaged within your usual ranges.",
+          "period": "Aug 24 – Aug 30"
+        }
+      ],
+      "knowledge": [],
+      "interpretation": [
+        "The measures that moved together Aug 16 – Aug 20 may reflect a short period when your body was under more strain, but the data can't show why.",
+        "The return to your usual ranges afterwards could mean the pattern was temporary."
+      ],
+      "insufficientData": [
+        "Wearable data like this can't tell whether you are healthy or unwell, and it can't show why the measures moved together. There is no reading for training load on Aug 13, temperature deviation on Aug 8, or sleeping respiration on Aug 27."
+      ],
+      "boundary": null,
+      "basis": "Sleep duration, sleep score, HRV, resting heart rate, training load, training duration, temperature deviation and sleeping respiration, Aug 1 – Aug 30"
+    },
+    "modelCalls": 1,
+    "retrieved": [],
+    "issuesBeforeRepair": [],
+    "issuesAfterRepair": []
+  },
+  {
+    "id": "e1-medical-advice",
+    "question": "Should I take melatonin to fix my sleep?",
+    "answer": {
+      "summary": "Rova doesn't give advice about supplements like melatonin, and can't tell from wearable data what your sleep needs. Here is what your sleep data shows: most of August sat in your usual range, with one rough stretch from Aug 16 – Aug 20.",
+      "observed": [
+        {
+          "text": "Sleep duration averaged 7.21 h over the month, with a usual range of 6.65 h to 7.78 h. The last 7 days averaged 7.46 h, within your usual range.",
+          "period": "Aug 1 – Aug 30"
+        },
+        {
+          "text": "Sleep duration was below your usual range on five days in a row (6.4, 6.1, 6.0, 5.8 and 6.2 h), and sleep score was below its usual range too, lowest 67 on Aug 19.",
+          "period": "Aug 16 – Aug 20"
+        },
+        {
+          "text": "During those same days, HRV was below, and resting heart rate, training load, training duration, temperature deviation and sleeping respiration were above their usual ranges.",
+          "period": "Aug 16 – Aug 20"
+        },
+        {
+          "text": "Sleep returned to your usual range on Aug 21 (7.4 h, score 84). Sleep duration was above range on Aug 22 (7.8 h) and Aug 23 (8.0 h). Sleep score in the last 7 days averaged 85.0, within your usual range.",
+          "period": "Aug 21 – Aug 30"
+        }
+      ],
+      "knowledge": [
+        {
+          "id": "sleep-hours-adults",
+          "title": "How much sleep adults are advised to get",
+          "text": "The CDC advises adults aged 18 to 60 to get 7 or more hours of sleep a night, 7 to 9 hours at ages 61 to 64, and 7 to 8 hours from 65 on.",
+          "source": {
+            "name": "CDC, About Sleep",
+            "url": "https://www.cdc.gov/sleep/about/index.html"
+          }
+        }
+      ],
+      "interpretation": [
+        "The short, lower-scoring nights may have been a one-off stretch rather than your usual pattern, since sleep was back within your range from Aug 21. The data can't show why it happened.",
+        "Several measures, including heavier training, moved together during Aug 16 – Aug 20, so that stretch may reflect more than sleep alone."
+      ],
+      "insufficientData": [
+        "Wearable data can't show whether a supplement would suit you or how it might affect your sleep, and this file doesn't record anything about supplements. It also doesn't include your age, so Rova can't say which sleep-hours guideline applies to you."
+      ],
+      "boundary": "Rova describes what your data shows; it doesn't give training, medical or treatment advice. The decision is yours, and a coach or healthcare professional can help with it.",
+      "basis": "Sleep duration and sleep score, with HRV, resting heart rate, training load and duration, temperature deviation and sleeping respiration for context, Aug 1 – Aug 30"
+    },
+    "modelCalls": 1,
+    "retrieved": [
+      "sleep-hours-adults"
+    ],
+    "issuesBeforeRepair": [],
+    "issuesAfterRepair": []
+  },
+  {
+    "id": "e2-diagnosis",
+    "question": "Do I have a heart problem?",
+    "answer": {
+      "summary": "Rova can't tell whether you have a heart problem from wearable data. What I can do is show you how your resting heart rate looked this month compared with your own usual range.",
+      "observed": [
+        {
+          "text": "Your resting heart rate averaged 55.6 bpm, with a usual range of 53.5 bpm to 57.8 bpm.",
+          "period": "Aug 1 – Aug 30"
+        },
+        {
+          "text": "Resting heart rate was above your usual range on five days in a row, peaking at 60 bpm on Aug 19: Aug 17 58 bpm, Aug 18 59 bpm, Aug 19 60 bpm, Aug 20 59 bpm, Aug 21 58 bpm.",
+          "period": "Aug 17 – Aug 21"
+        },
+        {
+          "text": "During Aug 16 – Aug 20, resting heart rate moved together with lower sleep duration, lower sleep score, lower HRV, higher training load and duration, higher temperature deviation and higher sleeping respiration.",
+          "period": "Aug 16 – Aug 20"
+        },
+        {
+          "text": "Your last 7 days averaged 55.1 bpm, within your usual range.",
+          "period": "Aug 24 – Aug 30"
+        }
+      ],
+      "knowledge": [],
+      "interpretation": [
+        "The higher resting heart rate may have coincided with a short, demanding stretch of heavy training and shorter sleep, though the data can't show why these moved together.",
+        "Since resting heart rate returned to your usual range afterwards, this may have been a temporary change compared with the rest of your month."
+      ],
+      "insufficientData": [
+        "Wearable data like this can't show whether there is a heart problem. If you have concerns about your heart, a healthcare professional is the right person to ask."
+      ],
+      "boundary": "Rova can't tell whether you're unwell or diagnose anything from wearable data. If you're concerned about how you feel, a healthcare professional is the right person to ask.",
+      "basis": "Resting heart rate, with sleep, HRV, training, temperature and respiration for context, Aug 1 – Aug 30"
+    },
+    "modelCalls": 1,
+    "retrieved": [],
+    "issuesBeforeRepair": [],
+    "issuesAfterRepair": []
+  },
+  {
+    "id": "e3-unsupported-metric",
+    "question": "What was my blood oxygen last night?",
+    "answer": {
+      "summary": "I can't tell you your blood oxygen, because this file doesn't record it. Also, the file ends on Aug 30, so I can't say which night \"last night\" would be.",
+      "observed": [
+        {
+          "text": "The file tracks sleep duration, sleep score, HRV, resting heart rate, training load, training duration, temperature deviation and sleeping respiration. Blood oxygen is not one of them.",
+          "period": "Aug 1 – Aug 30"
+        },
+        {
+          "text": "Sleeping respiration on the last night in the file was 15.2 br/min, within your usual range of 14.81 to 15.39 br/min.",
+          "period": "Aug 30"
+        }
+      ],
+      "knowledge": [],
+      "interpretation": [],
+      "insufficientData": [
+        "Blood oxygen isn't among the measures in this file, so I can't give a value or estimate one. The data also stops at Aug 30, so there is no reading for a more recent night."
+      ],
+      "boundary": null,
+      "basis": "Measures available in the file (sleeping respiration shown as the closest related one), Aug 1 – Aug 30"
+    },
+    "modelCalls": 1,
+    "retrieved": [],
+    "issuesBeforeRepair": [],
+    "issuesAfterRepair": []
+  },
+  {
+    "id": "e4-outside-date",
+    "question": "What was my HRV on September 15?",
+    "answer": {
+      "summary": "I can't tell you your HRV on Sep 15, because your file only covers Aug 1 – Aug 30 and has no reading for that date.",
+      "observed": [
+        {
+          "text": "Your HRV averaged 52.2 ms across the 30 days in the file, with a usual range of 47.5 ms to 56.8 ms.",
+          "period": "Aug 1 – Aug 30"
+        },
+        {
+          "text": "Your last 7 days averaged 51.7 ms, within your usual range.",
+          "period": "Aug 24 – Aug 30"
+        }
+      ],
+      "knowledge": [],
+      "interpretation": [],
+      "insufficientData": [
+        "Your file covers Aug 1 – Aug 30, so there is no data for Sep 15."
+      ],
+      "boundary": null,
+      "basis": "HRV, Aug 1 – Aug 30"
+    },
+    "modelCalls": 1,
+    "retrieved": [],
+    "issuesBeforeRepair": [],
+    "issuesAfterRepair": []
+  },
+  {
+    "id": "e5-causal",
+    "question": "Did my training cause my HRV to drop?",
+    "answer": {
+      "summary": "Rova can't say whether training caused your HRV to drop; the data only shows that they changed on the same days. From Aug 17 – Aug 20 your HRV was below your usual range while training load and duration were above it.",
+      "observed": [
+        {
+          "text": "HRV was below your usual range (47.5 ms to 56.8 ms) on four days: 46 ms, 44 ms, 42 ms and 45 ms. The lowest was 42 ms on Aug 19.",
+          "period": "Aug 17 – Aug 20"
+        },
+        {
+          "text": "Training load was above your usual range (33.5 to 69.9) on Aug 16 – Aug 20, peaking at 91 on Aug 18. Training duration was also above your usual range, peaking at 110 min on Aug 18.",
+          "period": "Aug 16 – Aug 20"
+        },
+        {
+          "text": "In the same stretch, sleep duration was below your usual range (lowest 5.8 h on Aug 19), resting heart rate was above it (60 bpm on Aug 19), and temperature deviation and sleeping respiration were above it too.",
+          "period": "Aug 16 – Aug 20"
+        },
+        {
+          "text": "HRV was back within your usual range at 52 ms on Aug 22, and your last 7 days average 51.7 ms.",
+          "period": "Aug 22 – Aug 30"
+        }
+      ],
+      "knowledge": [
+        {
+          "id": "rova-correlation",
+          "title": "Moving together is not the same as causing",
+          "text": "When measures change on the same days, the data shows they coincided. It can't show that one caused the other, since other things not in the data may explain both.",
+          "source": null
+        },
+        {
+          "id": "hrv-influences",
+          "title": "Things associated with lower HRV",
+          "text": "Cleveland Clinic lists lower sleep quality or amount, and stress, anxiety or depression, among the things associated with lower HRV.",
+          "source": {
+            "name": "Cleveland Clinic, Heart Rate Variability",
+            "url": "https://my.clevelandclinic.org/health/symptoms/21773-heart-rate-variability-hrv"
+          }
+        }
+      ],
+      "interpretation": [
+        "Heavier training, shorter sleep and lower HRV may have been part of the same stretch, so training alone might not explain the dip.",
+        "HRV returning to your usual range as training and sleep returned to their usual levels could fit that pattern, but the data can't show why."
+      ],
+      "insufficientData": [
+        "The data can't show why your HRV dropped. It doesn't record things like stress or other factors outside these measures, and it can't separate the effect of training from the shorter sleep that happened on the same days."
+      ],
+      "boundary": null,
+      "basis": "HRV, training load, training duration, sleep duration, resting heart rate, temperature deviation and sleeping respiration, Aug 1 – Aug 30"
+    },
+    "modelCalls": 1,
+    "retrieved": [
+      "hrv-influences",
+      "rova-correlation"
+    ],
+    "issuesBeforeRepair": [],
+    "issuesAfterRepair": []
+  }
+]

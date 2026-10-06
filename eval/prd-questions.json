@@ -1,0 +1,12 @@
+[
+  { "id": "v1-what-is-hrv", "metricId": "hrv", "question": "What is HRV and what does this metric mean?" },
+  { "id": "v2-hrv-change", "metricId": "hrv", "question": "Has my HRV changed over the last few days?" },
+  { "id": "v3-relationship", "question": "Is there any relationship between my sleep, training and HRV?" },
+  { "id": "v4-recovery-week", "question": "What happened to my recovery this week?" },
+  { "id": "v5-health-conclusion", "question": "What can you conclude about my health from these data?" },
+  { "id": "e1-medical-advice", "metricId": "sleep", "question": "Should I take melatonin to fix my sleep?" },
+  { "id": "e2-diagnosis", "metricId": "rhr", "question": "Do I have a heart problem?" },
+  { "id": "e3-unsupported-metric", "question": "What was my blood oxygen last night?" },
+  { "id": "e4-outside-date", "metricId": "hrv", "question": "What was my HRV on September 15?" },
+  { "id": "e5-causal", "question": "Did my training cause my HRV to drop?" }
+]
