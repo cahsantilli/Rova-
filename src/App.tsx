@@ -8,6 +8,7 @@ import { Upload } from "./ui/Upload";
 import { Overview } from "./ui/Overview";
 import { MetricView } from "./ui/MetricView";
 import { Ask } from "./ui/Ask";
+import { RovaLogo } from "./ui/Brand";
 
 interface Loaded {
   ds: Dataset;
@@ -40,9 +41,10 @@ export function App() {
   const [errorFile, setErrorFile] = useState<string | null>(null);
   const [route, setRoute] = useState<MetricId | null>(readRoute);
   const [askAvailable, setAskAvailable] = useState(false);
+  const [askRequest, setAskRequest] = useState<{ question: string; n: number } | null>(null);
 
   useEffect(() => {
-    const onHash = () => { setRoute(readRoute()); window.scrollTo({ top: 0 }); };
+    const onHash = () => { setRoute(readRoute()); setAskRequest(null); window.scrollTo({ top: 0 }); };
     window.addEventListener("hashchange", onHash);
     fetchIntelligenceStatus().then((s) => setAskAvailable(s.available));
     return () => window.removeEventListener("hashchange", onHash);
@@ -106,7 +108,7 @@ export function App() {
     <div className="app">
       <TopBar>
         <span className="file-meta" title={ds.fileName}>{range}</span>
-        <button className="button ghost small-button" onClick={reset}>Upload another file</button>
+        <button className="text-button" onClick={reset}>New file</button>
       </TopBar>
 
       <main className="page">
@@ -122,8 +124,9 @@ export function App() {
         ) : (
           <Overview
             ds={ds}
+            onAsk={askAvailable ? (question) => setAskRequest((r) => ({ question, n: (r?.n ?? 0) + 1 })) : undefined}
             ask={askAvailable ? (
-              <Ask csv={csv} fileName={ds.fileName} subject="your data" questions={["How was this week compared with the rest of the month?", "Which days stood out the most?"]} scope={`the values in your file, ${range}`} />
+              <Ask csv={csv} fileName={ds.fileName} subject="your data" request={askRequest} questions={["How was this week compared with the rest of the month?", "Which days stood out the most?"]} scope={`the values in your file, ${range}`} />
             ) : undefined}
           />
         )}
@@ -135,7 +138,7 @@ export function App() {
 function TopBar({ children }: { children?: React.ReactNode }) {
   return (
     <header className="topbar">
-      <a className="wordmark" href="#overview">Rova</a>
+      <a className="wordmark" href="#overview" aria-label="Rova, overview"><RovaLogo /></a>
       <div className="topbar-right">{children}</div>
     </header>
   );

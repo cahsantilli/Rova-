@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import type { Point } from "../domain/stats";
+import type { FieldSummary, Point } from "../domain/stats";
 import { FIELDS, type FieldKey } from "../domain/schema";
 import { dayDate, formatNumber, formatValue, shortDate } from "../domain/format";
 
@@ -37,7 +37,7 @@ function stepDecimals(step: number): number {
 
 export function Chart({ points, field, kind, band, recentDays = 0, height = 220, label }: ChartProps) {
   const wrap = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(640);
+  const [width, setWidth] = useState(320);
   const [hover, setHover] = useState<number | null>(null);
 
   useLayoutEffect(() => {
@@ -113,6 +113,9 @@ export function Chart({ points, field, kind, band, recentDays = 0, height = 220,
         {kind === "line" ? (
           <g>
             {segments.map((d, i) => <path key={i} className="chart-line" d={d} />)}
+            {band && points.map((p, i) => p.value !== null && (p.value > band.high || p.value < band.low) && i !== hover && (
+              <circle key={`o${p.date}`} className="chart-outside" cx={x(i)} cy={y(p.value)} r={3.5} />
+            ))}
             {hover !== null && hp?.value != null && <circle className="chart-dot is-active" cx={x(hover)} cy={y(hp.value)} r={4.5} />}
             {lastIdx >= 0 && hover !== lastIdx && <circle className="chart-dot is-last" cx={x(lastIdx)} cy={y(points[lastIdx].value!)} r={4} />}
           </g>
@@ -121,7 +124,7 @@ export function Chart({ points, field, kind, band, recentDays = 0, height = 220,
             {points.map((p, i) => p.value !== null && (
               <rect
                 key={p.date}
-                className={`chart-bar${hover === i ? " is-active" : ""}${i >= recentStart ? " is-recent" : ""}`}
+                className={`chart-bar${hover === i ? " is-active" : ""}${i >= recentStart ? " is-recent" : ""}${band && (p.value > band.high || p.value < band.low) ? " is-outside" : ""}`}
                 x={x(i) - barW / 2}
                 y={Math.min(y(p.value), zeroY)}
                 width={barW}
@@ -174,5 +177,96 @@ export function Sparkline({ points, band, width = 132, height = 36 }: { points: 
       <path d={d} />
       <circle cx={x(li)} cy={y(points[li].value!)} r={3} />
     </svg>
+  );
+}
+
+/**
+ * Where one figure sits against the person's baseline: a track spanning the month's lowest to highest
+ * reading, the usual range as a soft band, the month average as a tick and the last 7 days as a point.
+ */
+export function RangeBar({ summary: s, width = 168 }: { summary: FieldSummary; width?: number }) {
+  if (!s.usual || s.recentAvg === null || s.periodAvg === null || !s.periodMin || !s.periodMax) return null;
+  const lo = Math.min(s.periodMin.value!, s.usual.low);
+  const hi = Math.max(s.periodMax.value!, s.usual.high);
+  const span = hi - lo || 1;
+  const pad = 6;
+  const x = (v: number) => pad + ((v - lo) / span) * (width - pad * 2);
+  const label = `Last 7 days ${formatValue(s.field, s.recentAvg, 1)}; usual range ${formatValue(s.field, s.usual.low, 1)} to ${formatValue(s.field, s.usual.high, 1)}; month average ${formatValue(s.field, s.periodAvg, 1)}`;
+  return (
+    <svg className="rangebar" width={width} height={22} viewBox={`0 0 ${width} 22`} role="img" aria-label={label}>
+      <title>{label}</title>
+      <line className="rangebar-track" x1={pad} x2={width - pad} y1={11} y2={11} />
+      <rect className="rangebar-band" x={x(s.usual.low)} y={6} width={Math.max(2, x(s.usual.high) - x(s.usual.low))} height={10} rx={5} />
+      <line className="rangebar-avg" x1={x(s.periodAvg)} x2={x(s.periodAvg)} y1={4} y2={18} />
+      <circle className="rangebar-dot" cx={x(s.recentAvg)} cy={11} r={5} />
+    </svg>
+  );
+}
+
+/**
+ * Several measures on one timeline: a dot per day, filled where that day's reading sat outside the
+ * person's usual range. The highlighted window is the stretch when they moved together.
+ */
+export function PatternStrip({ summaries, window: win }: { summaries: FieldSummary[]; window: { first: string; last: string } }) {
+  const wrap = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(320);
+  useLayoutEffect(() => {
+    const el = wrap.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => setWidth(Math.max(260, Math.floor(entry.contentRect.width))));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const n = summaries[0].series.length;
+  const labelW = width < 520 ? 0 : 168;
+  const rowH = width < 520 ? 38 : 26;
+  const top = 6;
+  const slot = (width - labelW) / n;
+  const cx = (i: number) => labelW + slot * i + slot / 2;
+  const firstIdx = summaries[0].series.findIndex((p) => p.date === win.first);
+  const lastIdx = summaries[0].series.findIndex((p) => p.date === win.last);
+  const height = top + rowH * summaries.length + 22;
+  const r = Math.max(2.5, Math.min(4, slot * 0.3));
+  return (
+    <div className="strip" ref={wrap}>
+      <svg width={width} height={height} role="img" aria-label={`Days each measure was outside your usual range, ${shortDate(summaries[0].series[0].date)} to ${shortDate(summaries[0].series[n - 1].date)}. Highlighted: ${shortDate(win.first)} to ${shortDate(win.last)}.`}>
+        <rect className="strip-window" x={labelW + slot * firstIdx} y={0} width={slot * (lastIdx - firstIdx + 1)} height={height - 18} rx={8} />
+        {summaries.map((s, row) => {
+          const yMid = top + rowH * row + (width < 520 ? 24 : rowH / 2);
+          return (
+            <g key={s.field}>
+              <text className="strip-label" x={width < 520 ? 0 : 0} y={width < 520 ? yMid - 13 : yMid + 4}>{FIELDS[s.field].label}</text>
+              {s.series.map((p, i) => {
+                const out = s.usual && p.value !== null && (p.value > s.usual.high || p.value < s.usual.low);
+                const tip = `${shortDate(p.date)} · ${FIELDS[s.field].label} ${p.value === null ? "no reading" : formatValue(s.field, p.value)}${out ? (p.value! > s.usual!.high ? " (higher than usual)" : " (lower than usual)") : ""}`;
+                return p.value === null ? (
+                  <circle key={p.date} className="strip-missing" cx={cx(i)} cy={yMid} r={r - 0.5}><title>{tip}</title></circle>
+                ) : (
+                  <circle key={p.date} className={out ? "strip-dot is-out" : "strip-dot"} cx={cx(i)} cy={yMid} r={out ? r : r * 0.55}><title>{tip}</title></circle>
+                );
+              })}
+            </g>
+          );
+        })}
+        <text className="chart-axis" x={labelW} y={height - 4}>{shortDate(summaries[0].series[0].date)}</text>
+        <text className="chart-axis" x={labelW + slot * ((firstIdx + lastIdx + 1) / 2)} y={height - 4} textAnchor="middle">{shortDate(win.first)} – {shortDate(win.last)}</text>
+        <text className="chart-axis" x={width} y={height - 4} textAnchor="end">{shortDate(summaries[0].series[n - 1].date)}</text>
+      </svg>
+      <p className="strip-legend">
+        <span className="strip-key is-out" aria-hidden="true" /> Outside your usual range
+        <span className="strip-key" aria-hidden="true" /> Within it
+      </p>
+    </div>
+  );
+}
+
+/** Explains the RangeBar marks once per section. */
+export function RangeKey() {
+  return (
+    <p className="range-key" aria-hidden="true">
+      <span><i className="k-dot" /> Last 7 days</span>
+      <span><i className="k-band" /> Your usual range</span>
+      <span><i className="k-avg" /> Month average</span>
+    </p>
   );
 }

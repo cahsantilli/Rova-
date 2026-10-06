@@ -13,6 +13,8 @@ interface AskProps {
   questions: string[];
   /** What the answer can draw on, e.g. "the values in your file, Aug 1 – Aug 30". */
   scope: string;
+  /** A question sent from elsewhere on the page; a new `n` asks it again. */
+  request?: { question: string; n: number } | null;
 }
 
 type State =
@@ -22,7 +24,8 @@ type State =
   | { kind: "error"; question: string; error: string };
 
 /** One question at a time. Answers keep your data, general knowledge and interpretation visibly apart. */
-export function Ask({ csv, fileName, metricId, subject, questions, scope }: AskProps) {
+export function Ask({ csv, fileName, metricId, subject, questions, scope, request }: AskProps) {
+  const box = useRef<HTMLElement>(null);
   const [question, setQuestion] = useState("");
   const [state, setState] = useState<State>({ kind: "idle" });
   const [unavailable, setUnavailable] = useState(false);
@@ -34,6 +37,13 @@ export function Ask({ csv, fileName, metricId, subject, questions, scope }: AskP
     setState({ kind: "idle" });
     setQuestion("");
   }, [metricId, csv]);
+
+  useEffect(() => {
+    if (!request) return;
+    box.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    ask(request.question);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [request?.n]);
 
   async function ask(raw: string) {
     const q = raw.trim();
@@ -57,8 +67,11 @@ export function Ask({ csv, fileName, metricId, subject, questions, scope }: AskP
   const idSuffix = metricId ?? "all";
 
   return (
-    <section className="ask" data-testid="ask" aria-labelledby={`ask-title-${idSuffix}`}>
-      <h2 id={`ask-title-${idSuffix}`}>Ask about {subject}</h2>
+    <section className="ask" data-testid="ask" ref={box} aria-labelledby={`ask-title-${idSuffix}`}>
+      <div className="ask-head">
+        <h2 id={`ask-title-${idSuffix}`}>Ask about {subject}</h2>
+        <p className="ask-sub">Rova answers from your data and a short library of general wellness notes, and keeps the two apart.</p>
+      </div>
 
       {state.kind !== "idle" && (
         <div className="ask-result" aria-live="polite">
@@ -72,7 +85,7 @@ export function Ask({ csv, fileName, metricId, subject, questions, scope }: AskP
       {state.kind === "idle" && (
         <div className="ask-starters">
           {questions.map((q) => (
-            <button key={q} type="button" className="starter" onClick={() => ask(q)}>{q}</button>
+            <button key={q} type="button" className="starter" onClick={() => ask(q)}>{q}<span aria-hidden="true">→</span></button>
           ))}
         </div>
       )}
@@ -89,7 +102,7 @@ export function Ask({ csv, fileName, metricId, subject, questions, scope }: AskP
         />
         <button className="button primary" type="submit" disabled={!question.trim() || state.kind === "loading"}>Ask</button>
       </form>
-      <p className="ask-note">Answers use {scope} and Rova's own short library of general wellness notes. AI can make mistakes, and Rova doesn't give medical advice.</p>
+      <p className="ask-note">Answers use {scope}. AI can make mistakes, and Rova doesn't give medical advice.</p>
     </section>
   );
 }

@@ -46,17 +46,24 @@ async function newPage(viewport) {
 
   // Supplied dataset.
   await page.setInputFiles('[data-testid="file-input"]', CSV);
-  await page.waitForSelector(".tiles");
+  await page.waitForSelector(".hero");
   const headline = await page.textContent("#home-title");
-  const detail = await page.textContent(".home-detail");
+  const detail = await page.textContent(".hero-detail");
   check(headline === "Your week looks steady." && /All six metrics stayed within your usual range/.test(detail), `home answers "how am I doing" → "${headline} ${detail}"`);
-  const rows = await page.$$eval(".tile", (els) => els.map((e) => e.innerText.replace(/\s+/g, " ")));
-  check(rows.length === 6, `home shows six metric tiles (${rows.length})`);
+  const rows = await page.$$eval('[data-testid^="overview-"]', (els) => els.map((e) => e.innerText.replace(/\s+/g, " ")));
+  check(rows.length === 6, `home links to all six metrics (${rows.length})`);
+  check((await page.$$(".feature")).length === 2 && (await page.$$(".index-row")).length === 4, "the two metrics that moved most get more weight than the other four");
   const expectLatest = { Sleep: "7.1 h", HRV: "51 ms", "Resting Heart Rate": "54 bpm", Training: "53", Temperature: "0.0 °C", "Sleeping Respiration": "15.2 br/min" };
   for (const [name, val] of Object.entries(expectLatest)) {
     const row = rows.find((r) => r.startsWith(name + " "));
-    check(row?.includes(val) && row?.includes("In your usual range"), `${name} tile shows latest ${val} and its status → "${row}"`);
+    check(row?.includes(val) && /Within your usual range|Usual/.test(row ?? ""), `${name} shows latest ${val} and its status → "${row}"`);
   }
+  const changed = await page.$$eval(".change", (els) => els.map((e) => e.innerText.replace(/\s+/g, " ")));
+  check(changed.length === 3 && /Sleep duration was a little higher than your monthly average/.test(changed[0]) && /7\.46 h on average this week · 7\.21 h across the month/.test(changed[0]), `"What changed" leads with the biggest shift → "${changed[0]}"`);
+  const connected = await page.textContent(".block-statement");
+  check(/From Aug 16 to Aug 20, eight of your measures left their usual range at the same time/.test(connected), `"What might be connected" names the Aug 16 – Aug 20 stretch`);
+  const outDots = await page.$$eval(".strip-dot.is-out", (els) => els.length);
+  check(outDots > 0 && (await page.$$(".strip-missing")).length === 3, `the pattern strip marks days outside the usual range (${outDots}) and the 3 missing readings`);
   const notes = await page.textContent(".data-notes");
   check(/3 readings are missing/.test(notes) && /training load on Aug 13/.test(notes) && /temperature deviation on Aug 8/.test(notes) && /sleeping respiration on Aug 27/.test(notes), "data notes name the three missing readings");
   check(await page.$('[data-testid="ask"]') === null, "no Ask box when no model is configured");
@@ -75,7 +82,7 @@ async function newPage(viewport) {
     check(histRows === 30, `${id}: daily values show 30 days (${histRows})`);
     await page.screenshot({ path: `${SHOTS}/04-${i + 1}-${id}.png`, fullPage: true });
     await page.click(".back");
-    await page.waitForSelector(".tiles");
+    await page.waitForSelector(".hero");
   }
 
   // Missing data is shown as missing, never zero.
@@ -108,7 +115,7 @@ async function newPage(viewport) {
   await page.waitForSelector("#metric-title");
   check((await page.textContent("#metric-title")) === "Training", "browser back returns to the previous metric");
 
-  await page.click("text=Upload another file");
+  await page.click("text=New file");
   await page.waitForSelector(".dropzone");
   check(true, "can return to upload");
   await page.close();
@@ -119,7 +126,7 @@ async function newPage(viewport) {
   const page = await newPage({ width: 390, height: 844 });
   await page.goto(BASE);
   await page.setInputFiles('[data-testid="file-input"]', CSV);
-  await page.waitForSelector(".tiles");
+  await page.waitForSelector(".hero");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check(overflow <= 0, `mobile: no horizontal page scroll (${overflow}px)`);
   await page.screenshot({ path: `${SHOTS}/06-mobile-overview.png`, fullPage: true });
@@ -148,6 +155,9 @@ const STUB_ANSWER = JSON.parse(readFileSync(new URL("../eval/results/v2-answers.
   await page.setInputFiles('[data-testid="file-input"]', CSV);
   await page.waitForSelector('.home [data-testid="ask"]');
   check(true, "home shows a compact Ask box when a model is available");
+  await page.click("text=Ask about these days");
+  await page.waitForSelector(".ask-a");
+  check(sent?.question === "What happened between Aug 16 and Aug 20?" && !sent?.metricId, "\"Ask about these days\" sends the connected stretch to Ask");
   await page.click('[data-testid="overview-hrv"]');
   await page.waitForSelector('[data-testid="ask"] .starter');
   await page.click('[data-testid="ask"] .starter');
