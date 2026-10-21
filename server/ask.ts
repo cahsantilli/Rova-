@@ -1,4 +1,5 @@
 import { parseWellnessCsv } from "../src/domain/parse";
+import { metricById } from "../src/domain/schema";
 import { MAX_QUESTION_CHARS, type AskRequest, type AskResponse } from "../src/intelligence/contract";
 import { AnswerError, answerQuestion } from "../src/intelligence/answer";
 import { LlmError, type LlmProvider } from "./llm";
@@ -14,7 +15,7 @@ export function validateAskRequest(body: unknown): AskRequest | string {
     csv: b.csv,
     question: q,
     fileName: typeof b.fileName === "string" ? b.fileName : "data.csv",
-    metricId: typeof b.metricId === "string" ? (b.metricId as AskRequest["metricId"]) : undefined,
+    metricId: typeof b.metricId === "string" ? metricById(b.metricId)?.id : undefined, // unknown ids are dropped, never passed on
   };
 }
 

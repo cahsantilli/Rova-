@@ -1,0 +1,21 @@
+# Render Blueprint: one web service that builds the app and serves it with the Ask API.
+# Deploy: https://render.com/deploy?repo=https://github.com/cahsantilli/Rova-
+services:
+  - type: web
+    name: rova
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/intelligence/status
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Your Anthropic API key. Render asks for it when you create the service; it is never stored in the repo.
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      # Spending guards for a public link (questions per visitor per hour, and per day for everyone).
+      - key: ROVA_HOURLY_LIMIT
+        value: "20"
+      - key: ROVA_DAILY_LIMIT
+        value: "300"

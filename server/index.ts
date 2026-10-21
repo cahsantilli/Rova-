@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { MAX_FILE_BYTES } from "../src/domain/parse";
 import type { IntelligenceStatus } from "../src/intelligence/contract";
 import { handleAsk } from "./ask";
+import { askLimiter, limitsFromEnv } from "./limits";
 import { anthropicProvider, MODEL, type LlmProvider } from "./llm";
 
 const PORT = Number(process.env.PORT ?? 8787);
@@ -13,6 +14,15 @@ const SERVE_STATIC = process.env.NODE_ENV === "production";
 
 const apiKey = process.env.ANTHROPIC_API_KEY;
 const llm: LlmProvider | null = apiKey ? anthropicProvider(apiKey) : null;
+const limits = limitsFromEnv(process.env);
+const takeAsk = askLimiter(limits);
+
+/** The visitor's address; behind a host like Render the first x-forwarded-for entry is the client. */
+function visitorOf(req: IncomingMessage): string {
+  const fwd = req.headers["x-forwarded-for"];
+  const first = (Array.isArray(fwd) ? fwd[0] : fwd)?.split(",")[0]?.trim();
+  return first || req.socket.remoteAddress || "unknown";
+}
 
 const TYPES: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
@@ -22,6 +32,39 @@ const TYPES: Record<string, string> = {
   ".png": "image/png",
   ".ico": "image/x-icon",
 };
+
+// Sent with every response. The app loads its fonts from Google Fonts and nothing else from outside.
+const SECURITY_HEADERS: Record<string, string> = {
+  "Content-Security-Policy": [
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data:",
+    "connect-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+  ].join("; "),
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "no-referrer",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+};
+
+/** Ask only accepts JSON sent by Rova's own page, so other sites can't spend the API budget through a visitor's browser. */
+function isSameOriginJson(req: IncomingMessage): boolean {
+  if (!(req.headers["content-type"] ?? "").toLowerCase().startsWith("application/json")) return false;
+  const origin = req.headers.origin;
+  if (!origin) return true; // same-origin fetches from some browsers, and non-browser clients (still rate limited)
+  try {
+    return new URL(origin).host === req.headers.host;
+  } catch {
+    return false;
+  }
+}
 
 function json(res: ServerResponse, status: number, body: unknown) {
   res.writeHead(status, { "Content-Type": "application/json" });
@@ -59,6 +102,7 @@ async function serveStatic(pathname: string, res: ServerResponse) {
 
 const server = createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", "http://localhost");
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) res.setHeader(name, value);
 
   if (url.pathname === "/api/intelligence/status" && req.method === "GET") {
     const body: IntelligenceStatus = { available: llm !== null };
@@ -67,6 +111,9 @@ const server = createServer(async (req, res) => {
 
   if (url.pathname === "/api/intelligence/ask" && req.method === "POST") {
     if (!llm) return json(res, 503, { ok: false, error: "Ask is not available on this server." });
+    if (!isSameOriginJson(req)) return json(res, 403, { ok: false, error: "This request isn't allowed." });
+    const allowed = takeAsk(visitorOf(req));
+    if (!allowed.ok) return json(res, 429, { ok: false, error: allowed.error });
     let body: unknown;
     try {
       body = await readJson(req);
@@ -84,5 +131,5 @@ const server = createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`Rova server on http://localhost:${PORT}`);
-  console.log(llm ? `Ask is on (model ${MODEL}).` : "Ask is off: set ANTHROPIC_API_KEY to enable it.");
+  console.log(llm ? `Ask is on (model ${MODEL}; ${limits.perVisitorPerHour} questions per visitor per hour, ${limits.perDay} per day).` : "Ask is off: set ANTHROPIC_API_KEY to enable it.");
 });
